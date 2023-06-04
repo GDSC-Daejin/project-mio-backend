@@ -1,8 +1,8 @@
-package com.gdsc.projectmiobackend.entity;
+package com.gdsc.projectmiobackend.dto;
 
-import com.gdsc.projectmiobackend.dto.ChatMessage;
 import com.gdsc.projectmiobackend.service.ChatService;
 import lombok.Builder;
+
 import lombok.Getter;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -11,11 +11,8 @@ import java.util.Set;
 
 @Getter
 public class ChatRoom {
-
     private String roomId;
-
     private String name;
-
     private Set<WebSocketSession> sessions = new HashSet<>();
 
     @Builder

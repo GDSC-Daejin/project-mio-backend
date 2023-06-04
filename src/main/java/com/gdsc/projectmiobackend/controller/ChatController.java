@@ -1,6 +1,6 @@
 package com.gdsc.projectmiobackend.controller;
 
-import com.gdsc.projectmiobackend.entity.ChatRoom;
+import com.gdsc.projectmiobackend.dto.ChatRoom;
 import com.gdsc.projectmiobackend.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +23,4 @@ public class ChatController {
         return chatService.findAllRoom();
     }
 
-    @GetMapping("/{roomId}")
-    public ChatRoom findRoomById(@PathVariable String roomId) {
-        return chatService.findRoomById(roomId);
-    }
 }
