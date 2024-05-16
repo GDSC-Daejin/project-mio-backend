@@ -9,17 +9,24 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 public class ParticipateDto {
+    private Long participantId;
     private Long postId;
     private Long userId;
     private Long postUserId;
     private String content;
     private ApprovalOrReject approvalOrReject;
+    private Boolean driverMannerFinish;
+    private Boolean passengerMannerFinish;
 
-    public ParticipateDto(Long postId, Long userId, Long postUserId, String content, ApprovalOrReject approvalOrReject) {
+
+    public ParticipateDto(Long participantId, Long postId, Long userId, Long postUserId, String content, ApprovalOrReject approvalOrReject, Boolean driverMannerFinish, Boolean passengerMannerFinish) {
+        this.participantId = participantId;
         this.postId = postId;
         this.userId = userId;
         this.postUserId = postUserId;
         this.content = content;
         this.approvalOrReject = approvalOrReject;
+        this.driverMannerFinish = driverMannerFinish;
+        this.passengerMannerFinish = passengerMannerFinish;
     }
 }
