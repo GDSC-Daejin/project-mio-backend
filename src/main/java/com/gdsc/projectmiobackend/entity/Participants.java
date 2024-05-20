@@ -62,6 +62,12 @@ public class Participants {
                 .postId(post.getId())
                 .userId(user.getId())
                 .content(content)
+                .participantId(id)
+                .approvalOrReject(approvalOrReject)
+                .driverMannerFinish(driverMannerFinish)
+                .passengerMannerFinish(passengerMannerFinish)
+                .postUserId(postUserId)
+                .verifyFinish(verifyFinish)
                 .build();
     }
 }

@@ -17,9 +17,10 @@ public class ParticipateDto {
     private ApprovalOrReject approvalOrReject;
     private Boolean driverMannerFinish;
     private Boolean passengerMannerFinish;
+    private Boolean verifyFinish;
 
 
-    public ParticipateDto(Long participantId, Long postId, Long userId, Long postUserId, String content, ApprovalOrReject approvalOrReject, Boolean driverMannerFinish, Boolean passengerMannerFinish) {
+    public ParticipateDto(Long participantId, Long postId, Long userId, Long postUserId, String content, ApprovalOrReject approvalOrReject, Boolean driverMannerFinish, Boolean passengerMannerFinish, Boolean verifyFinish) {
         this.participantId = participantId;
         this.postId = postId;
         this.userId = userId;
@@ -28,5 +29,6 @@ public class ParticipateDto {
         this.approvalOrReject = approvalOrReject;
         this.driverMannerFinish = driverMannerFinish;
         this.passengerMannerFinish = passengerMannerFinish;
+        this.verifyFinish = verifyFinish;
     }
 }

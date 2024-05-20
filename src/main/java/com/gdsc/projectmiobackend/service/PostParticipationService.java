@@ -1,5 +1,6 @@
 package com.gdsc.projectmiobackend.service;
 
+import com.gdsc.projectmiobackend.dto.ParticipateDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
 import com.gdsc.projectmiobackend.entity.Participants;
 import java.util.List;
@@ -13,7 +14,7 @@ public interface PostParticipationService {
 
     void cancelParticipateInPost(Long postId, String email);
 
-    List<PostDto> getPostIdsByUserEmail(String email);
+    List<ParticipateDto> getPostIdsByUserEmail(String email);
 
     void participateApproval(Long participantId, String email);
 
