@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.service;
 
 import com.gdsc.projectmiobackend.common.ApprovalOrReject;
+import com.gdsc.projectmiobackend.dto.ParticipateDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
 import com.gdsc.projectmiobackend.entity.Alarm;
 import com.gdsc.projectmiobackend.entity.Participants;
@@ -114,15 +115,15 @@ public class PostParticipationServiceImpl implements PostParticipationService {
     }
 
     @Override
-    public List<PostDto> getPostIdsByUserEmail(String email) {
+    public List<ParticipateDto> getPostIdsByUserEmail(String email) {
         List<Participants> participants = participantsRepository.findPostListByUserId(getUser(email).getId());
-        List<Post> posts = new ArrayList<>();
+        List<ParticipateDto> newParticipants = new ArrayList<>();
         for (Participants participant : participants) {
-            posts.add(participant.getPost());
+            if(participant.getPostUserId() != participant.getUser().getId()){
+                newParticipants.add(participant.toDto());
+            }
         }
-        return posts.stream()
-                .map(Post::toDto)
-                .toList();
+        return newParticipants;
     }
 
     @Override

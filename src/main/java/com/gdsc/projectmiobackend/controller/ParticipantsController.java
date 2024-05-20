@@ -51,11 +51,12 @@ public class ParticipantsController {
                         participant.getId()
                         , participant.getPost().getId()
                         , participant.getUser().getId()
-                        , postId
+                        , participant.getPostUserId()
                         , participant.getContent()
                         , participant.getApprovalOrReject()
                         , participant.getDriverMannerFinish()
                         , participant.getPassengerMannerFinish()
+                        , participant.getVerifyFinish()
                 ))
                 .collect(Collectors.toList()));
     }
@@ -77,10 +78,10 @@ public class ParticipantsController {
     @Operation(summary = "유저가 참여한 게시글 조회")
     @PageableAsQueryParam
     @GetMapping("/user/participants")
-    public ResponseEntity<List<PostDto>> getParticipantsByUserId(@AuthenticationPrincipal UserInfo user) {
+    public ResponseEntity<List<ParticipateDto>> getParticipantsByUserId(@AuthenticationPrincipal UserInfo user) {
 
-        List<PostDto> posts = participantsService.getPostIdsByUserEmail(user.getEmail());
-        return ResponseEntity.ok(posts);
+        List<ParticipateDto> participateDtos = participantsService.getPostIdsByUserEmail(user.getEmail());
+        return ResponseEntity.ok(participateDtos);
     }
 
     @Operation(summary = "게시글 참여 승인")
