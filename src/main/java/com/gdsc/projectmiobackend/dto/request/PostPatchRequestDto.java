@@ -1,5 +1,7 @@
 package com.gdsc.projectmiobackend.dto.request;
 
+import com.gdsc.projectmiobackend.entity.Category;
+import com.gdsc.projectmiobackend.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -50,4 +52,19 @@ public class PostPatchRequestDto {
 
     @Schema(description = "비용", example = "3000")
     private Long cost;
+
+    public Post toEntity(Category category) {
+        return Post.builder()
+                .category(category)
+                .title(title)
+                .content(content)
+                .targetDate(targetDate)
+                .targetTime(targetTime)
+                .numberOfPassengers(numberOfPassengers)
+                .latitude(latitude)
+                .longitude(longitude)
+                .location(location)
+                .cost(cost)
+                .build();
+    }
 }
