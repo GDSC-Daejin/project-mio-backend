@@ -59,28 +59,13 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @CacheEvict(value = "postCache", allEntries=true)
-    public Post addPostList(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email){
+    public PostDto addPostList(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email){
         UserEntity user = getUserByEmail(email);
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("TODO 생성실패"));
 
-        Post post = Post.builder()
-                .title(postCreateRequestDto.getTitle())
-                .content(postCreateRequestDto.getContent())
-                .targetDate(postCreateRequestDto.getTargetDate())
-                .targetTime(postCreateRequestDto.getTargetTime())
-                .category(category)
-                .verifyGoReturn(postCreateRequestDto.getVerifyGoReturn())
-                .numberOfPassengers(postCreateRequestDto.getNumberOfPassengers())
-                .latitude(postCreateRequestDto.getLatitude())
-                .longitude(postCreateRequestDto.getLongitude())
-                .location(postCreateRequestDto.getLocation())
-                .cost(postCreateRequestDto.getCost())
-                .user(user)
-                .createDate(LocalDateTime.now())
-                .verifyFinish(postCreateRequestDto.getVerifyFinish())
-                .build();
+        Post post = postCreateRequestDto.toEntity(user, category);
 
         Participants participants = Participants.builder()
                 .post(post)
@@ -96,12 +81,19 @@ public class PostServiceImpl implements PostService{
         postRepository.save(post);
         participantsRepository.save(participants);
 
-        return post;
+        return post.toDto();
     }
 
+    /**
+     * 게시물 수정
+     * @param id
+     * @param postPatchRequestDto
+     * @param email
+     * @return PostDto
+     */
     @Override
     @CacheEvict(value = "postCache", allEntries=true)
-    public Post updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email){
+    public PostDto updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email){
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(id);
 
@@ -110,25 +102,24 @@ public class PostServiceImpl implements PostService{
 
         checkPostUser(post, user);
 
-        Post updatePost = post.toBuilder()
-                .title(postPatchRequestDto.getTitle())
-                .content(postPatchRequestDto.getContent())
-                .targetDate(postPatchRequestDto.getTargetDate())
-                .targetTime(postPatchRequestDto.getTargetTime())
-                .category(category)
-                .numberOfPassengers(postPatchRequestDto.getNumberOfPassengers())
-                .latitude(postPatchRequestDto.getLatitude())
-                .longitude(postPatchRequestDto.getLongitude())
-                .location(postPatchRequestDto.getLocation())
-                .cost(postPatchRequestDto.getCost())
-                .build();
+        Post updatePost = postPatchRequestDto.toEntity(category);
+        updatePost.setId(id);
 
-        return this.postRepository.save(updatePost);
+        postRepository.save(updatePost);
+
+        return updatePost.toDto();
     }
 
+    /**
+     * 게시물 마감
+     * @param id
+     * @param postPatchRequestDto
+     * @param email
+     * @return
+     */
     @Override
     @CacheEvict(value = "postCache", allEntries=true)
-    public Post updateFinishById(Long id, PostVerifyFinishRequestDto postPatchRequestDto, String email){
+    public PostDto updateFinishById(Long id, PostVerifyFinishRequestDto postPatchRequestDto, String email){
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(id);
 
@@ -148,7 +139,9 @@ public class PostServiceImpl implements PostService{
             }
         }
 
-        return this.postRepository.save(post);
+        postRepository.save(post);
+
+        return post.toDto();
     }
 
     @Override
@@ -186,14 +179,12 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public Post showDetailPost(Long id){
-
+    public PostDto showDetailPost(Long id){
         Post post = getPostById(id);
-
         post.setViewCount(post.getViewCount() + 1);
-
         postRepository.save(post);
-        return postRepository.findById(id).orElse(null);
+
+        return post.toDto();
     }
 
     @Override
