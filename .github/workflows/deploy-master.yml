@@ -37,11 +37,11 @@ jobs:
                 - name: PASSWORD
                   value: mio-db-password
                 - name: CLIENT
-                      value: mio-google
+                value: mio-google
                 - name: JWT
-                      value: mio-jwt
+                value: mio-jwt
                 - name: DISCORD
-                      value: mio-discord
+                value: mio-discord
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git
