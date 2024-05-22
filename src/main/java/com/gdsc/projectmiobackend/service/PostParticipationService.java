@@ -18,7 +18,7 @@ public interface PostParticipationService {
 
     void participateApproval(Long participantId, String email);
 
-    PostDto getApprovalUser(String email);
+    List<PostDto> getApprovalUser(String email);
 
     void rejectParticipateInPost(Long participateId, String email);
 }

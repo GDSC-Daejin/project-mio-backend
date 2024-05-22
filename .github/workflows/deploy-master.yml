@@ -27,15 +27,21 @@ jobs:
               ports: 8080
               env:
                 - name: HOST
-                  value: svc.sel4.cloudtype.app
+                  value: mio-db-host
                 - name: PORT
-                  value: "30637"
+                  value: mio-db-port
                 - name: NAME
-                  value: mio
+                  value: mio-db-name
                 - name: USER
-                  value: root
+                  value: mio-db-user
                 - name: PASSWORD
-                  value: "0194"
+                  value: mio-db-password
+                - name: CLIENT
+                      value: mio-google
+                - name: JWT
+                      value: mio-jwt
+                - name: DISCORD
+                      value: mio-discord
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git

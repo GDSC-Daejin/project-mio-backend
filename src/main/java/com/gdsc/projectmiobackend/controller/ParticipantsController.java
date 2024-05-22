@@ -93,9 +93,9 @@ public class ParticipantsController {
 
     @Operation(summary = "유저별 카풀 승인 현황")
     @GetMapping("/user/participants/carpool")
-    public ResponseEntity<PostDto> getParticipantsByUserIdAndCarpool(@AuthenticationPrincipal UserInfo user) {
+    public ResponseEntity<List<PostDto>> getParticipantsByUserIdAndCarpool(@AuthenticationPrincipal UserInfo user) {
 
-        PostDto post = participantsService.getApprovalUser(user.getEmail());
+        List<PostDto> post = participantsService.getApprovalUser(user.getEmail());
         return ResponseEntity.ok(post);
     }
 }
