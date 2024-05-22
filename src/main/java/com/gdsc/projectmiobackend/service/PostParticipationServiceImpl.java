@@ -188,19 +188,19 @@ public class PostParticipationServiceImpl implements PostParticipationService {
 
 
     @Override
-    public PostDto getApprovalUser(String email){
+    public List<PostDto> getApprovalUser(String email){
         UserEntity user = getUser(email);
         List<Participants> participants = participantsRepository.findByUserId(user.getId());
-
+        List<PostDto> postList = new ArrayList<>();
         if(participants.isEmpty()){
             throw new IllegalArgumentException("해당 유저는 참여한 게시글이 없습니다.");
         }
 
         for (Participants participant : participants) {
             if(participant.getApprovalOrReject() == ApprovalOrReject.APPROVAL){
-                return participant.getPost().toDto();
+                postList.add(participant.getPost().toDto());
             }
         }
-        return null;
+        return postList;
     }
 }
