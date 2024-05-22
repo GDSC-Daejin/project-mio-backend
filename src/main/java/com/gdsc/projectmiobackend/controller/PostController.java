@@ -36,11 +36,8 @@ public class PostController {
             @RequestBody PostCreateRequestDto postCreateRequestDto,
             @PathVariable Long categoryId,
             @AuthenticationPrincipal UserInfo user) throws Exception{
-        postCreateRequestDto.setViewCount(0L);
-
-        Post post = this.postService.addPostList(postCreateRequestDto, categoryId, user.getEmail());
-
-        return ResponseEntity.ok(new PostDto(post));
+        PostDto post = this.postService.addPostList(postCreateRequestDto, categoryId, user.getEmail());
+        return ResponseEntity.ok(post);
     }
 
     @Operation(summary = "게시글 수정")
@@ -49,8 +46,8 @@ public class PostController {
             @PathVariable Long id,
             @RequestBody PostPatchRequestDto patchRequestDto,
             @AuthenticationPrincipal UserInfo user){
-        Post post = postService.updateById(id, patchRequestDto, user.getEmail());
-        return ResponseEntity.ok(new PostDto(post));
+        PostDto post = postService.updateById(id, patchRequestDto, user.getEmail());
+        return ResponseEntity.ok(post);
     }
 
     @Operation(summary = "게시글 완료 수정")
@@ -59,8 +56,8 @@ public class PostController {
             @PathVariable Long id,
             @RequestBody PostVerifyFinishRequestDto patchRequestDto,
             @AuthenticationPrincipal UserInfo user){
-        Post post = postService.updateFinishById(id, patchRequestDto, user.getEmail());
-        return ResponseEntity.ok(new PostDto(post));
+        PostDto post = postService.updateFinishById(id, patchRequestDto, user.getEmail());
+        return ResponseEntity.ok(post);
     }
 
     @Operation(summary = "게시글 삭제")
@@ -177,8 +174,7 @@ public class PostController {
     @Operation(summary = "게시글 ID로 상세 조회")
     @GetMapping("detail/{id}")
     public ResponseEntity<PostDto> getPostById(@PathVariable Long id){
-        Post post = postService.showDetailPost(id);
-        return ResponseEntity.ok(new PostDto(post));
+        return ResponseEntity.ok(postService.showDetailPost(id));
     }
 
     @Operation(summary = "위도 경도에 포함된 게시글 리스트 조회")

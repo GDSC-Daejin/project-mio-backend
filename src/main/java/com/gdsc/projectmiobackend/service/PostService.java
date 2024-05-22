@@ -15,13 +15,13 @@ public interface PostService {
 
     Post findById(Long id);
 
-    Post addPostList(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email) throws IOException;
+    PostDto addPostList(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email) throws IOException;
 
     void deletePostList(Long id, String email);
 
-    Post updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email);
+    PostDto updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email);
 
-    Post updateFinishById(Long id, PostVerifyFinishRequestDto postPatchRequestDto, String email);
+    PostDto updateFinishById(Long id, PostVerifyFinishRequestDto postPatchRequestDto, String email);
 
     Page<PostDto> findPostList(Pageable pageable);
 
@@ -29,7 +29,7 @@ public interface PostService {
 
     Page<PostDto> findByMemberId(Long userId, Pageable pageable);
 
-    Post showDetailPost(Long id);
+    PostDto showDetailPost(Long id);
 
     List<PostDto> findByLatitudeAndLongitude(Double latitude, Double longitude);
 
