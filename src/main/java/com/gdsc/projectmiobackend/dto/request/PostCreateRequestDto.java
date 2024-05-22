@@ -1,13 +1,16 @@
 package com.gdsc.projectmiobackend.dto.request;
 
+import com.gdsc.projectmiobackend.entity.Category;
+import com.gdsc.projectmiobackend.entity.Post;
+import com.gdsc.projectmiobackend.entity.UserEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -40,10 +43,6 @@ public class PostCreateRequestDto {
     @Schema(description = "운전자를 제외한 탑승 인원", example = "3")
     private Integer numberOfPassengers;
 
-    @Schema(description = "조회수", example = "0")
-    @Nullable
-    private Long viewCount;
-
     @Schema(description = "도착 여부 false: 진행중 true: 도착", example = "false")
     private Boolean verifyFinish;
 
@@ -58,4 +57,24 @@ public class PostCreateRequestDto {
 
     @Schema(description = "요금", example = "3000")
     private Long cost;
+
+    public Post toEntity(UserEntity user, Category category){
+        return Post.builder()
+                .category(category)
+                .title(title)
+                .content(content)
+                .targetDate(targetDate)
+                .targetTime(targetTime)
+                .verifyGoReturn(verifyGoReturn)
+                .numberOfPassengers(numberOfPassengers)
+                .viewCount(0L)
+                .verifyFinish(verifyFinish)
+                .latitude(latitude)
+                .longitude(longitude)
+                .location(location)
+                .cost(cost)
+                .createDate(LocalDateTime.now())
+                .user(user)
+                .build();
+    }
 }
