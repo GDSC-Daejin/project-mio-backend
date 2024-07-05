@@ -43,7 +43,6 @@ public class CommentServiceImpl implements CommentService{
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
         Comment comment = commentRequestDto.toEntity(post, user);
-        comment.setCreateDate(LocalDateTime.now());
 
         return commentRepository.save(comment);
     }
@@ -56,7 +55,6 @@ public class CommentServiceImpl implements CommentService{
 
         Comment comment = commentRequestDto.toEntity(post, user);
         comment.setParentComment(parentComment);
-        comment.setCreateDate(LocalDateTime.now());
         return commentRepository.save(comment);
     }
 
