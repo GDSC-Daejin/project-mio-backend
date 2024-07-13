@@ -27,13 +27,15 @@ public class AopLogging {
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest httpRequest = requestAttributes.getRequest();
+
+        String clientIp = httpRequest.getRemoteAddr();
+
         ApiLog log = apiLogRepository.save(
                 new ApiLog(
                         InetAddress.getLocalHost().getHostAddress(),
                         httpRequest.getRequestURL().toString(),
                         httpRequest.getMethod(),
-                        httpRequest.getHeader("X-FORWARDED-FOR") != null && !httpRequest.getHeader("X-FORWARDED-FOR").isEmpty() ?
-                                httpRequest.getHeader("X-FORWARDED-FOR") : httpRequest.getRemoteAddr(),
+                        clientIp,
                         getRequestString(joinPoint)
                 )
         );
