@@ -6,7 +6,7 @@ pipeline {
   }
 
   stages {
-    stage('git pull'){
+    stage('git pull') {
       steps {
         echo 'Git Pull - Start'
         sh """
@@ -24,7 +24,7 @@ pipeline {
       }
     }
 
-    stage('build'){
+    stage('build') {
       steps {
         echo 'Build Start'
         sh """
@@ -45,13 +45,17 @@ pipeline {
       }
     }
 
-    stage('deploy'){
+    stage('deploy') {
       steps {
         echo 'Deploy Start'
         sh """
-        docker stop ${CONTAINER_NAME}
-        docker rm ${CONTAINER_NAME}
-        docker rmi ${IMAGE_NAME}
+        if [ \$(docker ps -q -f name=${CONTAINER_NAME}) ]; then
+          docker stop ${CONTAINER_NAME}
+          docker rm ${CONTAINER_NAME}
+        fi
+        if [ \$(docker images -q ${IMAGE_NAME}) ]; then
+          docker rmi ${IMAGE_NAME}
+        fi
         docker build -t ${IMAGE_NAME} .
         docker run -d --name ${CONTAINER_NAME} -p 8080:8080 -v /home/jenkins:/var/jenkins_home ${IMAGE_NAME}
         """
