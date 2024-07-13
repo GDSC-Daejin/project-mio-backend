@@ -18,12 +18,6 @@ pipeline {
         success {
           echo 'Git Pull - Success'
         }
-        failure {
-          echo 'Git Pull - Failure'
-          mail to: 'anes53027@gmail.com',
-               subject: "Jenkins Failure: Git Pull",
-               body: "Git Pull Failed."
-        }
       }
     }
 
@@ -34,17 +28,6 @@ pipeline {
         chmod 755 ./gradlew
         ./gradlew clean build
         '''
-      }
-      post {
-        success {
-          echo 'Build Success'
-        }
-        failure {
-          echo 'Build Failure'
-          mail to: 'anes53027@gmail.com',
-               subject: "Jenkins Failure: Build",
-               body: "Build Failed."
-        }
       }
     }
 
@@ -60,23 +43,10 @@ pipeline {
           docker rmi ${IMAGE_NAME}
         fi
         docker build -t ${IMAGE_NAME} .
-        docker run -d --name ${CONTAINER_NAME} -p 8080:8080 -v /home/jenkins:/var/jenkins_home ${IMAGE_NAME}
+        docker run -d --name ${CONTAINER_NAME} -p 8080:8080 -e HOST=221.145.28.69 -e PORT=3306 -e NAME=mioserver -e USER=mio -e PASSWORD=0194 -e CLIENT=975290935363-39a6c8jmq1s3psk5fd57m9t7f5r81noq.apps.googleusercontent.com -e JWT=kajshdfklhasdkflhlsifyiqewyfiadhsfjahdsfksgjhsfklafdhkelfsodusehrkjdfgrsejkuseghfsadfasdfasdfasdfasdf -e DISCORD=https://discord.com/api/webhooks/1209355197739180042/us9PD2B7Mdjxr8NXprPMl-MV2PCKRlduMF5IJHj2pwHPth1zWHnAfo7c03UyAr12TqJh -e SSLPWD = 019499 -v /home/jenkins:/var/jenkins_home ${IMAGE_NAME}
         '''
       }
-      post {
-        success {
-          echo 'Deploy Success'
-          mail to: 'anes53027@gmail.com',
-               subject: "Jenkins Success: Deploy",
-               body: "Deploy Success."
-        }
-        failure {
-          echo 'Deploy Failure'
-          mail to: 'anes53027@gmail.com',
-               subject: "Jenkins Failure: Deploy",
-               body: "Deploy Failed."
-        }
-      }
+
     }
   }
 }
