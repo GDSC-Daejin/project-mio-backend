@@ -5,6 +5,7 @@ import com.gdsc.projectmiobackend.jwt.dto.UserInfo;
 import com.gdsc.projectmiobackend.service.BookMarkService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class BookMarkController {
                                          @AuthenticationPrincipal UserInfo user){
 
         this.bookMarkService.saveBookMark(postId, user.getEmail());
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "회원별 북마크 조회")
