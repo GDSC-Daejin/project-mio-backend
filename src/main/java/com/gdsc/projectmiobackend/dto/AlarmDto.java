@@ -18,14 +18,6 @@ public class AlarmDto {
     private Long id;
     private LocalDateTime createDate;
     private String content;
-    private Post post;
-    private UserEntity userEntity;
-
-    public AlarmDto(Alarm alarm){
-        this.id = alarm.getId();
-        this.createDate = alarm.getCreateDate();
-        this.content = alarm.getContent();
-        this.post = alarm.getPost();
-        this.userEntity = alarm.getUserEntity();
-    }
+    private Long postId;
+    private Long userId;
 }

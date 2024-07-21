@@ -1,5 +1,7 @@
 package com.gdsc.projectmiobackend.entity;
 
+import com.gdsc.projectmiobackend.dto.AlarmDto;
+import com.gdsc.projectmiobackend.dto.PostDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,10 +22,10 @@ public class Alarm {
 
     private String content;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity userEntity;
 
     public Alarm(LocalDateTime createDate, String content, Post post, UserEntity userEntity) {
@@ -31,5 +33,15 @@ public class Alarm {
         this.content = content;
         this.post = post;
         this.userEntity = userEntity;
+    }
+
+    public AlarmDto toDto() {
+        return AlarmDto.builder()
+                .id(id)
+                .content(content)
+                .createDate(createDate)
+                .postId(post != null ? post.getId() : null)
+                .userId(userEntity != null ? userEntity.getId() : null)
+                .build();
     }
 }

@@ -8,6 +8,7 @@ import com.gdsc.projectmiobackend.service.AlarmService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,26 +29,26 @@ public class AlarmController {
     public ResponseEntity<AlarmDto> create(
             @RequestBody AlarmCreateRequestDto alarmCreateRequestDto){
 
-        Alarm alarm = this.alarmService.saveAlarm(alarmCreateRequestDto);
+        AlarmDto alarm = alarmService.saveAlarm(alarmCreateRequestDto);
 
-        return ResponseEntity.ok(new AlarmDto(alarm));
+        return ResponseEntity.ok(alarm);
     }
 
     @Operation(summary = "알람 조회")
     @GetMapping("/readAll")
-    public ResponseEntity<List<Alarm>> readAll(
+    public ResponseEntity<List<AlarmDto>> readAll(
             @AuthenticationPrincipal UserInfo user){
 
-        return ResponseEntity.ok(this.alarmService.getAllAlarm(user.getEmail()));
+        return ResponseEntity.ok(alarmService.getAllAlarm(user.getEmail()));
     }
 
     @Operation(summary = "알람 삭제")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(
+    public ResponseEntity<Void> delete(
             @PathVariable Long id,
             @AuthenticationPrincipal UserInfo user){
 
         this.alarmService.deleteAlarm(id, user.getEmail());
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

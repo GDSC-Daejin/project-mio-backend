@@ -14,18 +14,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AlarmCreateRequestDto {
 
-    private LocalDateTime createDate;
-
     private String content;
 
     private Long postId;
 
     private Long userId;
 
-    public Alarm toEntity(AlarmCreateRequestDto alarmCreateRequestDto, Post post, UserEntity userEntity){
+    public Alarm toEntity(Post post, UserEntity userEntity){
         return Alarm.builder()
-                .createDate(alarmCreateRequestDto.getCreateDate())
-                .content(alarmCreateRequestDto.getContent())
+                .createDate(LocalDateTime.now())
+                .content(content)
                 .post(post)
                 .userEntity(userEntity)
                 .build();

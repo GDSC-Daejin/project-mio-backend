@@ -1,5 +1,6 @@
 package com.gdsc.projectmiobackend.service;
 
+import com.gdsc.projectmiobackend.dto.AlarmDto;
 import com.gdsc.projectmiobackend.dto.request.AlarmCreateRequestDto;
 import com.gdsc.projectmiobackend.entity.Alarm;
 import com.gdsc.projectmiobackend.entity.Post;
@@ -8,6 +9,7 @@ import com.gdsc.projectmiobackend.repository.AlarmRepository;
 import com.gdsc.projectmiobackend.repository.PostRepository;
 import com.gdsc.projectmiobackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,14 +29,16 @@ public class AlarmServiceImpl implements AlarmService{
     }
 
     @Override
-    public Alarm saveAlarm(AlarmCreateRequestDto alarm){
-        UserEntity user = userRepository.findById(alarm.getUserId()).orElseThrow(() -> new IllegalArgumentException("유저정보가 없습니다."));
-        Post post = postRepository.findById(alarm.getPostId()).orElseThrow(() -> new IllegalArgumentException("포스트 정보가 없습니다."));
-        return alarmRepository.save(alarm.toEntity(alarm, post, user));
+    public AlarmDto saveAlarm(AlarmCreateRequestDto alarmCreateRequestDto){
+        UserEntity user = userRepository.findById(alarmCreateRequestDto.getUserId()).orElseThrow(() -> new IllegalArgumentException("유저정보가 없습니다."));
+        Post post = postRepository.findById(alarmCreateRequestDto.getPostId()).orElseThrow(() -> new IllegalArgumentException("포스트 정보가 없습니다."));
+        Alarm alarm = alarmCreateRequestDto.toEntity(post, user);
+        alarmRepository.save(alarm);
+        return alarm.toDto();
     }
 
     @Override
-    public List<Alarm> getAllAlarm(String email){
+    public List<AlarmDto> getAllAlarm(String email){
         UserEntity user = getUser(email);
         return alarmRepository.findByUserEntity(user);
     }
