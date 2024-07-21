@@ -83,7 +83,7 @@ public class Post {
                 .postId(id)
                 .title(title)
                 .content(content)
-                .createDate(LocalDateTime.now())
+                .createDate(createDate)
                 .targetDate(targetDate)
                 .targetTime(targetTime)
                 .category(category)
