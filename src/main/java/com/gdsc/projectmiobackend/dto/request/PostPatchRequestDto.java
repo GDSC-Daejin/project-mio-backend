@@ -72,7 +72,7 @@ public class PostPatchRequestDto {
                 .location(this.location != null ? this.location : existingPost.getLocation())
                 .cost(this.cost != null ? this.cost : existingPost.getCost())
                 .isDeleteYN(existingPost.getIsDeleteYN())
-                .category(category)
+                .category(category != null ? category : existingPost.getCategory())
                 .user(existingPost.getUser())
                 .build();
     }
