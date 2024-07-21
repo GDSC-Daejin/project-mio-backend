@@ -53,18 +53,27 @@ public class PostPatchRequestDto {
     @Schema(description = "비용", example = "3000")
     private Long cost;
 
-    public Post toEntity(Category category) {
+    public Post toEntity(Post existingPost, Category category) {
         return Post.builder()
+                .id(existingPost.getId())
+                .title(this.title != null ? this.title : existingPost.getTitle())
+                .content(this.content != null ? this.content : existingPost.getContent())
+                .createDate(existingPost.getCreateDate())
+                .targetDate(this.targetDate != null ? this.targetDate : existingPost.getTargetDate())
+                .targetTime(this.targetTime != null ? this.targetTime : existingPost.getTargetTime())
+                .verifyGoReturn(existingPost.getVerifyGoReturn())
+                .numberOfPassengers(this.numberOfPassengers != null ? this.numberOfPassengers : existingPost.getNumberOfPassengers())
+                .viewCount(existingPost.getViewCount())
+                .verifyFinish(existingPost.getVerifyFinish())
+                .latitude(this.latitude != null ? this.latitude : existingPost.getLatitude())
+                .longitude(this.longitude != null ? this.longitude : existingPost.getLongitude())
+                .bookMarkCount(existingPost.getBookMarkCount())
+                .participantsCount(existingPost.getParticipantsCount())
+                .location(this.location != null ? this.location : existingPost.getLocation())
+                .cost(this.cost != null ? this.cost : existingPost.getCost())
+                .isDeleteYN(existingPost.getIsDeleteYN())
                 .category(category)
-                .title(title)
-                .content(content)
-                .targetDate(targetDate)
-                .targetTime(targetTime)
-                .numberOfPassengers(numberOfPassengers)
-                .latitude(latitude)
-                .longitude(longitude)
-                .location(location)
-                .cost(cost)
+                .user(existingPost.getUser())
                 .build();
     }
 }

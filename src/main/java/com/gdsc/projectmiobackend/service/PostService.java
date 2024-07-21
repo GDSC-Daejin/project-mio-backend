@@ -15,7 +15,7 @@ public interface PostService {
 
     Post findById(Long id);
 
-    PostDto addPostList(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email) throws IOException;
+    PostDto addPost(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email) throws IOException;
 
     void deletePostList(Long id, String email);
 

@@ -4,7 +4,6 @@ package com.gdsc.projectmiobackend.controller;
 import com.gdsc.projectmiobackend.dto.ParticipateGetDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
 import com.gdsc.projectmiobackend.dto.request.*;
-import com.gdsc.projectmiobackend.entity.Post;
 import com.gdsc.projectmiobackend.jwt.dto.UserInfo;
 import com.gdsc.projectmiobackend.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +35,7 @@ public class PostController {
             @RequestBody PostCreateRequestDto postCreateRequestDto,
             @PathVariable Long categoryId,
             @AuthenticationPrincipal UserInfo user) throws Exception{
-        PostDto post = this.postService.addPostList(postCreateRequestDto, categoryId, user.getEmail());
+        PostDto post = this.postService.addPost(postCreateRequestDto, categoryId, user.getEmail());
         return ResponseEntity.ok(post);
     }
 

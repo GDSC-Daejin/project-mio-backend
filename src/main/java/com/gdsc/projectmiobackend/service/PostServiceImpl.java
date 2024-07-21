@@ -34,16 +34,31 @@ public class PostServiceImpl implements PostService{
 
     private final MannerEntityRepository mannerEntityRepository;
 
+    /**
+     * 이메일로 유저 정보를 가져옵니다.
+     * @param email 유저 이메일
+     * @return UserEntity 유저 엔티티
+     */
     private UserEntity getUserByEmail(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보를 찾을 수 없습니다. 이메일: " + email));
     }
 
+    /**
+     * 게시물 ID로 게시물 정보를 가져옵니다.
+     * @param id 게시물 ID
+     * @return Post 게시물 엔티티
+     */
     private Post getPostById(Long id){
         return postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다. ID: " + id));
     }
 
+    /**
+     * 게시물 작성자인지 확인합니다.
+     * @param post 게시물 엔티티
+     * @param user 유저 엔티티
+     */
     private void checkPostUser(Post post, UserEntity user){
         if (!Objects.equals(post.getUser().getEmail(), user.getEmail())) {
             throw new IllegalStateException("게시물을 수정할 권한이 없습니다. 게시물 ID: " + post.getId());
@@ -52,21 +67,16 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public Post findById(Long id) {
-        return postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다. ID: "+ id));
+        return getPostById(id);
     }
-
 
     @Override
     @CacheEvict(value = "postCache", allEntries=true)
-    public PostDto addPostList(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email){
+    public PostDto addPost(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email){
         UserEntity user = getUserByEmail(email);
-
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("TODO 생성실패"));
-
         Post post = postCreateRequestDto.toEntity(user, category);
-
         Participants participants = Participants.builder()
                 .post(post)
                 .user(user)
@@ -96,15 +106,12 @@ public class PostServiceImpl implements PostService{
     public PostDto updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email){
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(id);
-
         Category category = categoryRepository.findById(postPatchRequestDto.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다. " + postPatchRequestDto.getCategoryId()));
 
         checkPostUser(post, user);
 
-        Post updatePost = postPatchRequestDto.toEntity(category);
-        updatePost.setId(id);
-
+        Post updatePost = postPatchRequestDto.toEntity(post, category);
         postRepository.save(updatePost);
 
         return updatePost.toDto();
