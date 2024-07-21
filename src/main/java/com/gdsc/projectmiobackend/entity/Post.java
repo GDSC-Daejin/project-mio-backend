@@ -62,6 +62,8 @@ public class Post {
 
     private Long cost;
 
+    private String isDeleteYN;
+
     @ManyToOne
     @JoinColumn
     private Category category;
@@ -95,6 +97,7 @@ public class Post {
                 .longitude(longitude)
                 .location(location)
                 .cost(cost)
+                .isDeleteYN(isDeleteYN)
                 .build();
     }
 }

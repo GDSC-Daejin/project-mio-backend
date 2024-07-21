@@ -147,18 +147,15 @@ public class PostServiceImpl implements PostService{
     @Override
     @CacheEvict(value = "postCache", allEntries=true)
     public void deletePostList(Long id, String email) {
+
         UserEntity user = getUserByEmail(email);
-        Post post = getPostById(id);
-
-        checkPostUser(post, user);
-
-        postRepository.deleteById(id);
+        postRepository.deletePost(user.getId(), id);
     }
 
     @Override
     @Cacheable(value="postCache", key="#pageable")
     public Page<PostDto> findPostList(Pageable pageable) {
-        Page<Post> page = postRepository.findAll(pageable);
+        Page<Post> page = postRepository.findAllByIsDeleteYN("N", pageable);
         return page.map(Post::toDto);
     }
 
@@ -166,7 +163,7 @@ public class PostServiceImpl implements PostService{
     public Page<PostDto> findByCategoryId(Long categoryId, Pageable pageable){
         Category category = this.categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다. " + categoryId));
-        Page<Post> page = postRepository.findByCategory(category, pageable);
+        Page<Post> page = postRepository.findByCategoryAndIsDeleteYN(category, pageable, "N");
         return page.map(Post::toDto);
     }
 
@@ -174,7 +171,7 @@ public class PostServiceImpl implements PostService{
     public Page<PostDto> findByMemberId(Long userId, Pageable pageable){
         UserEntity user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저정보가 없습니다. 아이디: " + userId));
-        Page<Post> page = postRepository.findByUser(user, pageable);
+        Page<Post> page = postRepository.findByUserAndIsDeleteYN(user, pageable, "N");
         return page.map(Post::toDto);
     }
 
@@ -189,7 +186,7 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public List<PostDto> findByLatitudeAndLongitude(Double latitude, Double longitude){
-        List<Post> postList = postRepository.findByLatitudeAndLongitude(latitude, longitude);
+        List<Post> postList = postRepository.findByLatitudeAndLongitudeAndIsDeleteYN(latitude, longitude, "N");
         return postList.stream().map(Post::toDto).toList();
     }
 
@@ -345,7 +342,7 @@ public class PostServiceImpl implements PostService{
             throw new IllegalArgumentException("지역을 입력해주세요.");
         }
 
-        List<Post> postList = postRepository.findByLocationContaining(location);
+        List<Post> postList = postRepository.findByLocationContainingAndIsDeleteYN(location, "N");
         return postList.stream().map(Post::toDto).toList();
     }
 
@@ -402,7 +399,7 @@ public class PostServiceImpl implements PostService{
             }
         }*/
 
-        List<Post> postList = postRepository.findByDistance(postId);
+        List<Post> postList = postRepository.findByDistanceAndIsDeleteYN(postId, "N");
 
         return postList.stream().map(Post::toDto).toList();
     }

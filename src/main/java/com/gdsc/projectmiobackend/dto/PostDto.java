@@ -38,6 +38,8 @@ public class PostDto {
     private Long participantsCount;
     private String location;
     private Long cost;
+    private String isDeleteYN;
+
     public PostDto(Post post){
         this.postId = post.getId();
         this.title = post.getTitle();
@@ -57,5 +59,6 @@ public class PostDto {
         this.participantsCount = post.getParticipantsCount();
         this.location = post.getLocation();
         this.cost = post.getCost();
+        this.isDeleteYN = post.getIsDeleteYN();
     }
 }

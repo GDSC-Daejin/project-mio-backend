@@ -73,6 +73,7 @@ public class PostCreateRequestDto {
                 .longitude(longitude)
                 .location(location)
                 .cost(cost)
+                .isDeleteYN("N")
                 .createDate(LocalDateTime.now())
                 .user(user)
                 .build();
