@@ -1,61 +1,35 @@
 package com.gdsc.projectmiobackend.chat.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.time.LocalDateTime;
-
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Chat {
-
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Chat extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chat_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "room_id")
+    @ManyToOne
     private ChatRoom room;
 
+//    @ManyToOne
+//    private Member sender;
     private String sender;
 
-    private String senderEmail;
-
-    @Column(columnDefinition = "TEXT")
     private String message;
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime sendDate;
-
-    @Builder
-    public Chat(ChatRoom room, String sender, String senderEmail, String message) {
-        this.room = room;
-        this.sender = sender;
-        this.senderEmail = senderEmail;
-        this.message = message;
-        this.sendDate = LocalDateTime.now();
-    }
-
-    /**
-     * 채팅 생성
-     * @param room 채팅 방
-     * @param sender 보낸이
-     * @param message 내용
-     * @return Chat Entity
-     */
-    public static Chat createChat(ChatRoom room, String sender, String senderEmail, String message) {
+/*    public static Chat of(ChatRequestDto dto, ChatRoom room, Member member){
         return Chat.builder()
                 .room(room)
-                .sender(sender)
-                .senderEmail(senderEmail)
-                .message(message)
+                .sender(member)
+                .message(dto.getMessage())
                 .build();
-    }
+    }*/
 }

@@ -1,33 +1,56 @@
 package com.gdsc.projectmiobackend.chat.controller;
 
-import com.gdsc.projectmiobackend.chat.dto.ChatMessage;
-import com.gdsc.projectmiobackend.chat.entity.Chat;
+import com.gdsc.projectmiobackend.chat.dto.ChatDto;
+import com.gdsc.projectmiobackend.chat.dto.ChatRequestDto;
+import com.gdsc.projectmiobackend.chat.dto.ResponseDto;
 import com.gdsc.projectmiobackend.chat.service.ChatService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-@Controller
+@RestController
+@Slf4j
 @RequiredArgsConstructor
-@Tag(name = "채팅")
 public class ChatController {
 
-    private final ChatService chatService;
+	private final ChatService chatService;
+	private final SimpMessagingTemplate msgOperation;
 
-    @MessageMapping("/{roomId}") //여기로 전송되면 메서드 호출 -> WebSocketConfig prefixes 에서 적용한건 앞에 생략
-    @SendTo("/room/{roomId}")   //구독하고 있는 장소로 메시지 전송 (목적지)  -> WebSocketConfig Broker 에서 적용한건 앞에 붙어줘야됨
-    public ChatMessage chat(@DestinationVariable Long roomId, ChatMessage message) {
+	@PostMapping("/chat")
+	public ResponseDto createChatRoom(@RequestBody ChatRequestDto requestDto) {
+		// @Param sender should be replaced to UserDetails.getMember();
+		return chatService.createChatRoom(requestDto);
+		// createChatRoom의 결과인 roomId와 type : ENTER을 저장한 chatDto에 넣어줘야함
+	}
 
-        //채팅 저장
-        Chat chat = chatService.createChat(roomId, message.getSender(), message.getSenderEmail(), message.getMessage());
-        return ChatMessage.builder()
-                .roomId(roomId)
-                .sender(chat.getSender())
-                .senderEmail(chat.getSenderEmail())
-                .message(chat.getMessage())
-                .build();
-    }
+	@MessageMapping("/chat/enter")
+	@SendTo("/sub/chat/room")
+	public void enterChatRoom(ChatDto chatDto, SimpMessageHeaderAccessor headerAccessor) throws Exception {
+		Thread.sleep(500); // simulated delay
+		ChatDto newchatdto = chatService.enterChatRoom(chatDto, headerAccessor);
+		msgOperation.convertAndSend("/sub/chat/room" + chatDto.getRoomId(), newchatdto);
+	}
+
+	@MessageMapping("/chat/send")
+	@SendTo("/sub/chat/room")
+	public void sendChatRoom(ChatDto chatDto, SimpMessageHeaderAccessor headerAccessor) throws Exception {
+		Thread.sleep(500); // simulated delay
+		msgOperation.convertAndSend("/sub/chat/room" + chatDto.getRoomId(), chatDto);
+	}
+
+	@EventListener
+	public void webSocketDisconnectListener(SessionDisconnectEvent event) {
+		StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+		ChatDto chatDto = chatService.disconnectChatRoom(headerAccessor);
+		msgOperation.convertAndSend("/sub/chat/room" + chatDto.getRoomId(), chatDto);
+	}
 }
