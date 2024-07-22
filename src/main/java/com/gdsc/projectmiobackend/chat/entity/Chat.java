@@ -1,17 +1,20 @@
 package com.gdsc.projectmiobackend.chat.entity;
 
+import com.gdsc.projectmiobackend.chat.dto.ChatDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Chat extends Timestamped {
+public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,17 +22,21 @@ public class Chat extends Timestamped {
     @ManyToOne
     private ChatRoom room;
 
-//    @ManyToOne
-//    private Member sender;
     private String sender;
 
     private String message;
 
-/*    public static Chat of(ChatRequestDto dto, ChatRoom room, Member member){
+    private LocalDateTime sendTime;
+
+    private ChatDto.MessageType type;
+
+    public static Chat of(ChatDto dto, ChatRoom room){
         return Chat.builder()
                 .room(room)
-                .sender(member)
+                .sender(dto.getSender())
                 .message(dto.getMessage())
+                .sendTime(LocalDateTime.now())
+                .type(dto.getType())
                 .build();
-    }*/
+    }
 }

@@ -4,6 +4,7 @@ import com.gdsc.projectmiobackend.chat.dto.ChatDto;
 import com.gdsc.projectmiobackend.chat.dto.ChatRequestDto;
 import com.gdsc.projectmiobackend.chat.dto.ResponseDto;
 import com.gdsc.projectmiobackend.chat.service.ChatService;
+import com.gdsc.projectmiobackend.jwt.dto.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -12,6 +13,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +36,7 @@ public class ChatController {
 
 	@MessageMapping("/chat/enter")
 	@SendTo("/sub/chat/room")
-	public void enterChatRoom(ChatDto chatDto, SimpMessageHeaderAccessor headerAccessor) throws Exception {
+	public void enterChatRoom(ChatDto chatDto, SimpMessageHeaderAccessor headerAccessor, @AuthenticationPrincipal UserInfo user) throws Exception {
 		Thread.sleep(500); // simulated delay
 		ChatDto newchatdto = chatService.enterChatRoom(chatDto, headerAccessor);
 		msgOperation.convertAndSend("/sub/chat/room" + chatDto.getRoomId(), newchatdto);
@@ -44,6 +46,7 @@ public class ChatController {
 	@SendTo("/sub/chat/room")
 	public void sendChatRoom(ChatDto chatDto, SimpMessageHeaderAccessor headerAccessor) throws Exception {
 		Thread.sleep(500); // simulated delay
+		chatService.saveMessage(chatDto);
 		msgOperation.convertAndSend("/sub/chat/room" + chatDto.getRoomId(), chatDto);
 	}
 

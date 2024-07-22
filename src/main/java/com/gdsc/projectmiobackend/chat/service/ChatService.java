@@ -4,7 +4,9 @@ package com.gdsc.projectmiobackend.chat.service;
 import com.gdsc.projectmiobackend.chat.dto.ChatDto;
 import com.gdsc.projectmiobackend.chat.dto.ChatRequestDto;
 import com.gdsc.projectmiobackend.chat.dto.ResponseDto;
+import com.gdsc.projectmiobackend.chat.entity.Chat;
 import com.gdsc.projectmiobackend.chat.entity.ChatRoom;
+import com.gdsc.projectmiobackend.chat.repository.ChatRepository;
 import com.gdsc.projectmiobackend.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class ChatService {
+    private final ChatRepository chatRepository;
 
     private final ChatRoomRepository chatRoomRepository;
 
@@ -46,6 +49,15 @@ public class ChatService {
 
         chatDto.setMessage(chatDto.getSender() + "님 입장!! ο(=•ω＜=)ρ⌒☆");
         return chatDto;
+    }
+
+    public void saveMessage(ChatDto chatDto) {
+        ChatRoom room = chatRoomRepository.findByRoomId(chatDto.getRoomId()).orElseThrow(
+                ()-> new NoSuchElementException("채팅방이 존재하지 않습니다."));
+
+        Chat chatMessage = Chat.of(chatDto, room);
+        // 메시지 저장
+        chatRepository.save(chatMessage);
     }
 
     public ChatDto disconnectChatRoom(SimpMessageHeaderAccessor headerAccessor) {
