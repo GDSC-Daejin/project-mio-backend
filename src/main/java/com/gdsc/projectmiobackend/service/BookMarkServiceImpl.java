@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.service;
 
 import com.gdsc.projectmiobackend.dto.BookMarkDto;
+import com.gdsc.projectmiobackend.dto.BookmarkAddDto;
 import com.gdsc.projectmiobackend.entity.BookMark;
 import com.gdsc.projectmiobackend.entity.Post;
 import com.gdsc.projectmiobackend.entity.UserEntity;
@@ -21,18 +22,24 @@ public class BookMarkServiceImpl implements BookMarkService{
     private final UserRepository userRepository;
     @Transactional
     @Override
-    public void saveBookMark(Long postId, String email) {
+    public BookmarkAddDto saveBookMark(Long postId, String email) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
         UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다."));
         BookMark existingBookMark = bookMarkRepository.findByPostAndUserEntity(post, userEntity);
 
+        BookmarkAddDto dto = new BookmarkAddDto();
+
         if (existingBookMark == null) {
             addBookMark(post, userEntity);
+            dto.setAddAndRemove("북마크 추가 완료");
         } else {
             removeBookMark(post, existingBookMark);
+            dto.setAddAndRemove("북마크 제거 완료");
         }
+
+        return dto;
     }
 
     private void addBookMark(Post post, UserEntity userEntity) {

@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.controller;
 
 import com.gdsc.projectmiobackend.dto.BookMarkDto;
+import com.gdsc.projectmiobackend.dto.BookmarkAddDto;
 import com.gdsc.projectmiobackend.jwt.dto.UserInfo;
 import com.gdsc.projectmiobackend.service.BookMarkService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,11 +22,10 @@ public class BookMarkController {
 
     @Operation(summary = "북마크 추가")
     @PostMapping("{postId}")
-    public ResponseEntity<Void> addBookMark(@PathVariable Long postId,
-                                         @AuthenticationPrincipal UserInfo user){
+    public ResponseEntity<BookmarkAddDto> addBookMark(@PathVariable Long postId,
+                                                      @AuthenticationPrincipal UserInfo user){
 
-        this.bookMarkService.saveBookMark(postId, user.getEmail());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(bookMarkService.saveBookMark(postId, user.getEmail()));
     }
 
     @Operation(summary = "회원별 북마크 조회")
