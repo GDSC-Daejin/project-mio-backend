@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import org.springframework.web.util.WebUtils;
@@ -26,6 +25,15 @@ public class RequestFilter implements Filter {
     private final MsgService msgService;
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        // SSE 요청인지 확인하는 조건 추가
+        if (isSseRequest(httpRequest)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper((HttpServletResponse) response);
 
@@ -73,6 +81,10 @@ public class RequestFilter implements Filter {
                 );
             }
         }
+    }
+
+    private boolean isSseRequest(HttpServletRequest request) {
+        return request.getRequestURI().contains("/v1/subscribe");
     }
 
     private Map getHeaders(HttpServletRequest request) {

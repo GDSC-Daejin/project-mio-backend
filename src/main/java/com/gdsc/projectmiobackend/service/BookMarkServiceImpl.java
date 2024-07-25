@@ -5,7 +5,6 @@ import com.gdsc.projectmiobackend.dto.BookmarkAddDto;
 import com.gdsc.projectmiobackend.entity.BookMark;
 import com.gdsc.projectmiobackend.entity.Post;
 import com.gdsc.projectmiobackend.entity.UserEntity;
-import com.gdsc.projectmiobackend.notification.service.NotificationService;
 import com.gdsc.projectmiobackend.repository.BookMarkRepository;
 import com.gdsc.projectmiobackend.repository.PostRepository;
 import com.gdsc.projectmiobackend.repository.UserRepository;
@@ -21,7 +20,6 @@ public class BookMarkServiceImpl implements BookMarkService{
     private final BookMarkRepository bookMarkRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final NotificationService notificationService;
     @Transactional
     @Override
     public BookmarkAddDto saveBookMark(Long postId, String email) {
@@ -36,11 +34,9 @@ public class BookMarkServiceImpl implements BookMarkService{
         if (existingBookMark == null) {
             addBookMark(post, userEntity);
             dto.setAddAndRemove("북마크 추가 완료");
-            notificationService.customNotify(userEntity.getId(), dto, "북마크 추가 완료", "bookmark");
         } else {
             removeBookMark(post, existingBookMark);
             dto.setAddAndRemove("북마크 제거 완료");
-            notificationService.customNotify(userEntity.getId(), dto, "북마크 제거 완료", "bookmark");
         }
 
         return dto;
