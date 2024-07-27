@@ -22,10 +22,10 @@ public class Alarm {
 
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private UserEntity userEntity;
 
     public Alarm(LocalDateTime createDate, String content, Post post, UserEntity userEntity) {

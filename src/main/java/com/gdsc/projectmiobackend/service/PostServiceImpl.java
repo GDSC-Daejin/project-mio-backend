@@ -151,6 +151,7 @@ public class PostServiceImpl implements PostService{
                         .post(post)
                         .userEntity(participants.getUser())
                         .content(post.getUser().getStudentId() + " 님과의 카풀은 어떠셨나요? 후기를 작성해주세요.")
+                        .createDate(LocalDateTime.now())
                         .build();
                 alarmRepository.save(alarm);
             }
@@ -165,6 +166,7 @@ public class PostServiceImpl implements PostService{
                 .post(post)
                 .userEntity(post.getUser())
                 .content("오늘 카풀은 어떠셨나요? 탑승자분들의 후기를 작성해주세요.")
+                .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
         postRepository.save(post);
@@ -289,6 +291,7 @@ public class PostServiceImpl implements PostService{
                 .post(post)
                 .userEntity(post.getUser())
                 .content(currentUser.getStudentId() + " 님이 후기를 남겼어요.")
+                .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
         this.userRepository.save(driver);
@@ -339,6 +342,7 @@ public class PostServiceImpl implements PostService{
                 .post(participants.getPost())
                 .userEntity(targetUser)
                 .content(currentUser.getStudentId() + " 님이 후기를 남겼어요.")
+                .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
         this.userRepository.save(targetUser);

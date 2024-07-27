@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -69,6 +70,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .post(post)
                 .userEntity(post.getUser())
                 .content(user.getStudentId() + " 님이 카풀(택시)을 신청하였어요.")
+                .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
 
@@ -125,6 +127,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .post(post)
                 .userEntity(post.getUser())
                 .content(user.getStudentId() + " 님이 카풀(택시)을 취소하였어요.")
+                .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
         participantsRepository.delete(participants);
@@ -184,6 +187,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .post(post)
                 .userEntity(participants.getUser())
                 .content(post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.")
+                .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
 
@@ -214,6 +218,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .post(post)
                 .userEntity(participants.getUser())
                 .content(post.getTitle() + " 글의 카풀(택시) 신청이 거절되었어요.")
+                .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
 
