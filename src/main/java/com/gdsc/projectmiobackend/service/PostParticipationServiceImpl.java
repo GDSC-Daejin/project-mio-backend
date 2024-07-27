@@ -7,6 +7,7 @@ import com.gdsc.projectmiobackend.entity.Alarm;
 import com.gdsc.projectmiobackend.entity.Participants;
 import com.gdsc.projectmiobackend.entity.Post;
 import com.gdsc.projectmiobackend.entity.UserEntity;
+import com.gdsc.projectmiobackend.notification.service.impl.NotificationServiceImpl;
 import com.gdsc.projectmiobackend.repository.AlarmRepository;
 import com.gdsc.projectmiobackend.repository.ParticipantsRepository;
 import com.gdsc.projectmiobackend.repository.PostRepository;
@@ -15,7 +16,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +26,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ParticipantsRepository participantsRepository;
+    private final NotificationServiceImpl notificationService;
     private final AlarmRepository alarmRepository;
 
     private Post getPost(Long postId){
@@ -61,6 +62,16 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .passengerMannerFinish(false)
                 .postUserId(post.getUser().getId())
                 .build();
+
+        // 게시글 작성자에게 유저 신청 알림
+        notificationService.customNotify(post.getUser().getId(), post.getId(), user.getStudentId() + " 님이 카풀(택시)을 신청하였어요.", "participate");
+        Alarm alarm = Alarm.builder()
+                .post(post)
+                .userEntity(post.getUser())
+                .content(user.getStudentId() + " 님이 카풀(택시)을 신청하였어요.")
+                .build();
+        alarmRepository.save(alarm);
+
 
         participantsRepository.save(participants);
     }
@@ -108,8 +119,13 @@ public class PostParticipationServiceImpl implements PostParticipationService {
             post.setParticipantsCount(post.getParticipantsCount() - 1);
         }
 
-        Alarm alarm = new Alarm(LocalDateTime.now(), "신청을 취소한 사람이 있습니다!", post, participants.getUser());
-
+        // 게시글 작성자에게 카풀을 취소한 사람이 있다는 알림 전송
+        notificationService.customNotify(post.getUser().getId(), post.getId(), user.getStudentId() + " 님이 카풀(택시)을 취소하였어요.", "participate");
+        Alarm alarm = Alarm.builder()
+                .post(post)
+                .userEntity(post.getUser())
+                .content(user.getStudentId() + " 님이 카풀(택시)을 취소하였어요.")
+                .build();
         alarmRepository.save(alarm);
         participantsRepository.delete(participants);
     }
@@ -161,6 +177,15 @@ public class PostParticipationServiceImpl implements PostParticipationService {
             }
         }*/
 
+        // 게시글 참가자에게 승인 알림
+        notificationService.customNotify(participants.getUser().getId(), post.getId(), post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.", "participate");
+
+        Alarm alarm = Alarm.builder()
+                .post(post)
+                .userEntity(participants.getUser())
+                .content(post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.")
+                .build();
+        alarmRepository.save(alarm);
 
         participantsRepository.save(participants);
     }
@@ -182,6 +207,15 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         }
 
         participants.setApprovalOrReject(ApprovalOrReject.REJECT);
+        // 게시글 참가자에게 거절 알림
+        notificationService.customNotify(participants.getUser().getId(), post.getId(), post.getTitle() + " 글의 카풀(택시) 신청이 거절되었어요.", "participate");
+
+        Alarm alarm = Alarm.builder()
+                .post(post)
+                .userEntity(participants.getUser())
+                .content(post.getTitle() + " 글의 카풀(택시) 신청이 거절되었어요.")
+                .build();
+        alarmRepository.save(alarm);
 
         participantsRepository.delete(participants);
     }

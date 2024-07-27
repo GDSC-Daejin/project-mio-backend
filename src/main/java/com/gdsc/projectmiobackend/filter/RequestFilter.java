@@ -84,7 +84,7 @@ public class RequestFilter implements Filter {
     }
 
     private boolean isSseRequest(HttpServletRequest request) {
-        return request.getRequestURI().contains("/v1/subscribe");
+        return request.getRequestURI().contains("/subscribe");
     }
 
     private Map getHeaders(HttpServletRequest request) {

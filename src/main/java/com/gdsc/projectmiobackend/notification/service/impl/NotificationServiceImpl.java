@@ -1,73 +1,76 @@
 package com.gdsc.projectmiobackend.notification.service.impl;
 
+import com.gdsc.projectmiobackend.notification.repository.EmitterRepository;
+import com.gdsc.projectmiobackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class NotificationServiceImpl {
 
-    private final Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>();
-    private static final long TIMEOUT = 6000 * 1000;
-    private static final long RECONNECTION_TIMEOUT = 1000L;
+    private final UserRepository userRepository;
+    private final EmitterRepository emitterRepository;
 
-    public SseEmitter subscribe(String userId) {
 
-        SseEmitter emitter = new SseEmitter(TIMEOUT);
-        emitter.onTimeout(() -> {
-            log.info("timed out : {}", userId);
-            emitter.complete();
-        });
+    private static final Long DEFAULT_TIMEOUT = 600L * 1000 * 60;
 
-        //에러 핸들러 등록
-        emitter.onError(e -> {
-            log.info("Error message : {}", e.getMessage());
-            emitter.complete();
-        });
+    public SseEmitter subscribe(Long userId) {
+        SseEmitter emitter = createEmitter(userId);
 
-        //SSE complete 핸들러 등록
-        emitter.onCompletion(() -> {
-            if (emitterMap.remove(userId) != null) {
-                log.info("Remove userId :{}", userId);
-            }
-            log.info("disconnect usrId : {}", userId);
-        });
-
-        emitterMap.put(userId, emitter);
-
-        try {
-            emitter.send(sseEventBuilder("subscribe",userId,"Subscribed successfully.")); //503 방지를위한 더미데이터
-            emitter.send(sseEventBuilder("subscribe2",userId,"Subscribed successfully.")); //503 방지를위한 더미데이터
-        } catch (IOException e) {
-            log.error("IOException : , {}", e.getMessage());
-        }
+        sendToClient(userId, "EventStream Created. [userId="+ userId + "]", "sse 접속 성공");
         return emitter;
     }
 
-    public void publish(String userId) {
-        SseEmitter emitter = emitterMap.get(userId);
-        if(emitter != null) {
+    public <T> void customNotify(Long userId, T data, String comment, String type) {
+        sendToClient(userId, data, comment, type);
+    }
+    public void notify(Long userId, Object data, String comment) {
+        sendToClient(userId, data, comment);
+    }
+
+    private void sendToClient(Long userId, Object data, String comment) {
+        SseEmitter emitter = emitterRepository.get(userId);
+        if (emitter != null) {
             try {
-                emitter.send(sseEventBuilder("publish",userId,"Order status has been changed."));
-                log.info("publish userId : {}", userId);
+                emitter.send(SseEmitter.event()
+                        .id(String.valueOf(userId))
+                        .name("sse")
+                        .data(data)
+                        .comment(comment));
             } catch (IOException e) {
-                log.error("IOException : {}", e.getMessage());
+                emitterRepository.deleteById(userId);
+                emitter.completeWithError(e);
             }
         }
     }
 
-    private SseEmitter.SseEventBuilder sseEventBuilder(String name, String userId, String message) {
-        return SseEmitter.event()
-                .name(name) //이벤트 명
-                .id(userId) //이벤트 ID
-                .data(message) //전송 데이터
-                .reconnectTime(RECONNECTION_TIMEOUT); // 재연결 대기시작
+    private <T> void sendToClient(Long userId, T data, String comment, String type) {
+        SseEmitter emitter = emitterRepository.get(userId);
+        if (emitter != null) {
+            try {
+                emitter.send(SseEmitter.event()
+                        .id(String.valueOf(userId))
+                        .name(type)
+                        .data(data)
+                        .comment(comment));
+            } catch (IOException e) {
+                emitterRepository.deleteById(userId);
+                emitter.completeWithError(e);
+            }
+        }
+    }
+
+    private SseEmitter createEmitter(Long userId) {
+        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+        emitterRepository.save(userId, emitter);
+
+        emitter.onCompletion(() -> emitterRepository.deleteById(userId));
+        emitter.onTimeout(() -> emitterRepository.deleteById(userId));
+
+        return emitter;
     }
 }

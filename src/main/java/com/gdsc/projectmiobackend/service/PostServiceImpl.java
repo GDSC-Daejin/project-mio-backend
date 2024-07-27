@@ -6,6 +6,7 @@ import com.gdsc.projectmiobackend.dto.ParticipateGetDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
 import com.gdsc.projectmiobackend.dto.request.*;
 import com.gdsc.projectmiobackend.entity.*;
+import com.gdsc.projectmiobackend.notification.service.impl.NotificationServiceImpl;
 import com.gdsc.projectmiobackend.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,6 +34,10 @@ public class PostServiceImpl implements PostService{
     private final ParticipantsRepository participantsRepository;
 
     private final MannerEntityRepository mannerEntityRepository;
+
+    private final NotificationServiceImpl notificationService;
+
+    private final AlarmRepository alarmRepository;
 
     /**
      * 이메일로 유저 정보를 가져옵니다.
@@ -140,12 +145,28 @@ public class PostServiceImpl implements PostService{
             if(participants.getApprovalOrReject() == ApprovalOrReject.APPROVAL){
                 participants.setApprovalOrReject(ApprovalOrReject.FINISH);
                 participants.setVerifyFinish(true);
+                // 카풀이 완료되어 탑승자들에게 후기 작성하라는 알림 발송
+                notificationService.customNotify(participants.getUser().getId(), post.getId(), post.getUser().getStudentId() + " 님과의 카풀은 어떠셨나요? 후기를 작성해주세요.", "participate");
+                Alarm alarm = Alarm.builder()
+                        .post(post)
+                        .userEntity(participants.getUser())
+                        .content(post.getUser().getStudentId() + " 님과의 카풀은 어떠셨나요? 후기를 작성해주세요.")
+                        .build();
+                alarmRepository.save(alarm);
             }
             else{
                 this.participantsRepository.delete(participants);
             }
         }
 
+        // 카풀 종료시 운전자에게 후기 작성하라는 알림 발송
+        notificationService.customNotify(post.getUser().getId(), post.getId(), "오늘 카풀은 어떠셨나요? 탑승자분들의 후기를 작성해주세요.", "participate");
+        Alarm alarm = Alarm.builder()
+                .post(post)
+                .userEntity(post.getUser())
+                .content("오늘 카풀은 어떠셨나요? 탑승자분들의 후기를 작성해주세요.")
+                .build();
+        alarmRepository.save(alarm);
         postRepository.save(post);
 
         return post.toDto();
@@ -260,10 +281,16 @@ public class PostServiceImpl implements PostService{
 
         driver.setGrade(calculateGrade(updateMannerCount));
 
-
-
         MannerEntity mannerEntity = new MannerEntity(mannerDriverUpdateRequestDto.getManner(), mannerDriverUpdateRequestDto.getContent(), driver.getId(), currentUser.getId(), LocalDateTime.now());
         mannerEntityRepository.save(mannerEntity);
+        // 탑승자가 운전자 후기
+        notificationService.customNotify(post.getUser().getId(), post.getId(), currentUser.getStudentId() + " 님이 후기를 남겼어요.", "participate");
+        Alarm alarm = Alarm.builder()
+                .post(post)
+                .userEntity(post.getUser())
+                .content(currentUser.getStudentId() + " 님이 후기를 남겼어요.")
+                .build();
+        alarmRepository.save(alarm);
         this.userRepository.save(driver);
     }
 
@@ -306,6 +333,14 @@ public class PostServiceImpl implements PostService{
 
         MannerEntity mannerEntity = new MannerEntity(mannerPassengerUpdateRequestDto.getManner(), mannerPassengerUpdateRequestDto.getContent(), targetUser.getId(), currentUser.getId(), LocalDateTime.now());
         mannerEntityRepository.save(mannerEntity);
+        // 운전자가 탑승자 후기
+        notificationService.customNotify(targetUser.getId(), participants.getPost().getId(), currentUser.getStudentId() + " 님이 후기를 남겼어요.", "participate");
+        Alarm alarm = Alarm.builder()
+                .post(participants.getPost())
+                .userEntity(targetUser)
+                .content(currentUser.getStudentId() + " 님이 후기를 남겼어요.")
+                .build();
+        alarmRepository.save(alarm);
         this.userRepository.save(targetUser);
     }
 
