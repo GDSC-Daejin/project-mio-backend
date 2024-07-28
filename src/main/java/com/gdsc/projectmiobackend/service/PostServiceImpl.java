@@ -4,6 +4,7 @@ package com.gdsc.projectmiobackend.service;
 import com.gdsc.projectmiobackend.common.ApprovalOrReject;
 import com.gdsc.projectmiobackend.dto.ParticipateGetDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
+import com.gdsc.projectmiobackend.dto.PostMsgDto;
 import com.gdsc.projectmiobackend.dto.request.*;
 import com.gdsc.projectmiobackend.entity.*;
 import com.gdsc.projectmiobackend.notification.service.impl.NotificationServiceImpl;
@@ -176,10 +177,11 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @CacheEvict(value = "postCache", allEntries=true)
-    public void deletePostList(Long id, String email) {
+    public PostMsgDto deletePostList(Long id, String email) {
 
         UserEntity user = getUserByEmail(email);
         postRepository.deletePost(user.getId(), id);
+        return new PostMsgDto("게시글 삭제 완료");
     }
 
     @Override
@@ -227,7 +229,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void driverUpdateManner(Long postId, String email, MannerDriverUpdateRequestDto mannerDriverUpdateRequestDto){
+    public PostMsgDto driverUpdateManner(Long postId, String email, MannerDriverUpdateRequestDto mannerDriverUpdateRequestDto){
         UserEntity currentUser = getUserByEmail(email);
 
         Post post = getPostById(postId);
@@ -295,10 +297,12 @@ public class PostServiceImpl implements PostService{
                 .build();
         alarmRepository.save(alarm);
         this.userRepository.save(driver);
+
+        return new PostMsgDto("운전자 평가 완료");
     }
 
     @Override
-    public void updateParticipatesManner(Long userId, MannerPassengerUpdateRequestDto mannerPassengerUpdateRequestDto, String email){
+    public PostMsgDto updateParticipatesManner(Long userId, MannerPassengerUpdateRequestDto mannerPassengerUpdateRequestDto, String email){
         UserEntity targetUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("운전자의 유저정보가 없습니다."));
         UserEntity currentUser = userRepository.findByEmail(email)
@@ -346,6 +350,8 @@ public class PostServiceImpl implements PostService{
                 .build();
         alarmRepository.save(alarm);
         this.userRepository.save(targetUser);
+
+        return new PostMsgDto("탑승자 평가 완료");
     }
 
     private String calculateGrade(Long mannerCount) {

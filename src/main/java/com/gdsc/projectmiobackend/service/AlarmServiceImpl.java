@@ -1,5 +1,6 @@
 package com.gdsc.projectmiobackend.service;
 
+import com.gdsc.projectmiobackend.dto.AlarmDeleteDto;
 import com.gdsc.projectmiobackend.dto.AlarmDto;
 import com.gdsc.projectmiobackend.dto.request.AlarmCreateRequestDto;
 import com.gdsc.projectmiobackend.entity.Alarm;
@@ -44,13 +45,19 @@ public class AlarmServiceImpl implements AlarmService{
     }
 
     @Override
-    public void deleteAlarm(Long id, String email){
+    public AlarmDeleteDto deleteAlarm(Long id, String email){
         UserEntity user = getUser(email);
 
         Alarm alarm = alarmRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("알람 정보가 없습니다."));
+
+        AlarmDeleteDto alarmDeleteDto;
+
         if(Objects.equals(alarm.getUserEntity().getId(), user.getId())){
             alarmRepository.delete(alarm);
+            alarmDeleteDto = new AlarmDeleteDto("알람을 삭제하였습니다.");
         }
         else throw new IllegalArgumentException("해당 알람을 삭제할 권한이 없습니다.");
+
+        return alarmDeleteDto;
     }
 }

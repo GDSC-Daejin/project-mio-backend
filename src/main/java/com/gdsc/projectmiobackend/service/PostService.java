@@ -3,6 +3,7 @@ package com.gdsc.projectmiobackend.service;
 
 import com.gdsc.projectmiobackend.dto.ParticipateGetDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
+import com.gdsc.projectmiobackend.dto.PostMsgDto;
 import com.gdsc.projectmiobackend.dto.request.*;
 import com.gdsc.projectmiobackend.entity.Post;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ public interface PostService {
 
     PostDto addPost(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email) throws IOException;
 
-    void deletePostList(Long id, String email);
+    PostMsgDto deletePostList(Long id, String email);
 
     PostDto updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email);
 
@@ -35,9 +36,9 @@ public interface PostService {
 
     ParticipateGetDto getApprovalUserCountByPost(Long postId);
 
-    void driverUpdateManner(Long id, String email, MannerDriverUpdateRequestDto mannerDriverUpdateRequestDto);
+    PostMsgDto driverUpdateManner(Long id, String email, MannerDriverUpdateRequestDto mannerDriverUpdateRequestDto);
 
-    void updateParticipatesManner(Long userId, MannerPassengerUpdateRequestDto mannerPassengerUpdateRequestDto, String email);
+    PostMsgDto updateParticipatesManner(Long userId, MannerPassengerUpdateRequestDto mannerPassengerUpdateRequestDto, String email);
 
     Page<PostDto> findByParticipate(String email, Pageable pageable);
 

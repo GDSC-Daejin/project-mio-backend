@@ -1,14 +1,13 @@
 package com.gdsc.projectmiobackend.controller;
 
+import com.gdsc.projectmiobackend.dto.AlarmDeleteDto;
 import com.gdsc.projectmiobackend.dto.AlarmDto;
 import com.gdsc.projectmiobackend.dto.request.AlarmCreateRequestDto;
-import com.gdsc.projectmiobackend.entity.Alarm;
 import com.gdsc.projectmiobackend.jwt.dto.UserInfo;
 import com.gdsc.projectmiobackend.service.AlarmService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,11 +43,11 @@ public class AlarmController {
 
     @Operation(summary = "알람 삭제")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<AlarmDeleteDto> delete(
             @PathVariable Long id,
             @AuthenticationPrincipal UserInfo user){
 
-        this.alarmService.deleteAlarm(id, user.getEmail());
-        return new ResponseEntity<>(HttpStatus.OK);
+        AlarmDeleteDto alarmDeleteDto = alarmService.deleteAlarm(id, user.getEmail());
+        return ResponseEntity.ok(alarmDeleteDto);
     }
 }

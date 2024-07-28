@@ -1,6 +1,8 @@
 package com.gdsc.projectmiobackend.service;
 
 import com.gdsc.projectmiobackend.common.ApprovalOrReject;
+import com.gdsc.projectmiobackend.dto.ParticipateMsgDto;
+import com.gdsc.projectmiobackend.dto.ParticipateCheckDto;
 import com.gdsc.projectmiobackend.dto.ParticipateDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
 import com.gdsc.projectmiobackend.entity.Alarm;
@@ -41,7 +43,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
     }
 
     @Override
-    public void participateInPost(Long postId, String email, String content) {
+    public ParticipateDto participateInPost(Long postId, String email, String content) {
         UserEntity user = getUser(email);
         Post post = getPost(postId);
 
@@ -73,26 +75,30 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
-
-
         participantsRepository.save(participants);
+
+        return participants.toDto();
     }
 
     @Override
-    public Boolean checkParticipate(Long postId, String email){
+    public ParticipateCheckDto checkParticipate(Long postId, String email){
         UserEntity user = getUser(email);
         Post post = getPost(postId);
 
         List<Participants> participants1 = participantsRepository.findByUserId(user.getId());
 
+        ParticipateCheckDto participateCheckDto = new ParticipateCheckDto();
+
         for (Participants p : participants1) {
             if(p.getApprovalOrReject() == ApprovalOrReject.APPROVAL
                     && p.getPost().getTargetDate().isEqual(post.getTargetDate())
                     && p.getPost().getVerifyGoReturn() == post.getVerifyGoReturn()) {
-                return false;
+                participateCheckDto.setCheck(false);
             }
         }
-        return true;
+        participateCheckDto.setCheck(true);
+
+        return participateCheckDto;
     }
 
     @Override
@@ -107,7 +113,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
     }
 
     @Override
-    public void cancelParticipateInPost(Long postId, String email) {
+    public ParticipateMsgDto cancelParticipateInPost(Long postId, String email) {
         UserEntity user = getUser(email);
         Post post = getPost(postId);
 
@@ -131,6 +137,8 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .build();
         alarmRepository.save(alarm);
         participantsRepository.delete(participants);
+
+        return new ParticipateMsgDto("게시글 참여 취소 완료");
     }
 
     @Override
@@ -146,7 +154,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
     }
 
     @Override
-    public void participateApproval(Long participateId, String email) {
+    public ParticipateMsgDto participateApproval(Long participateId, String email) {
         Participants participants = participantsRepository.findById(participateId).orElseThrow(() -> new IllegalArgumentException("해당 참여 정보가 없습니다 : " + participateId));
         Post post = participants.getPost().getUser().getEmail().equals(email) ? participants.getPost() : null;
 
@@ -192,9 +200,11 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         alarmRepository.save(alarm);
 
         participantsRepository.save(participants);
+
+        return new ParticipateMsgDto("참여를 승인하였습니다.");
     }
 
-    public void rejectParticipateInPost(Long participateId, String email){
+    public ParticipateMsgDto rejectParticipateInPost(Long participateId, String email){
         Participants participants = participantsRepository.findById(participateId).orElseThrow(() -> new IllegalArgumentException("해당 참여 정보가 없습니다 : " + participateId));
         Post post = participants.getPost().getUser().getEmail().equals(email) ? participants.getPost() : null;
 
@@ -223,6 +233,8 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         alarmRepository.save(alarm);
 
         participantsRepository.delete(participants);
+
+        return new ParticipateMsgDto("참여를 거절하였습니다.");
     }
 
 

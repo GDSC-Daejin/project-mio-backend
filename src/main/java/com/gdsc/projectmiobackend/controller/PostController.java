@@ -3,6 +3,7 @@ package com.gdsc.projectmiobackend.controller;
 
 import com.gdsc.projectmiobackend.dto.ParticipateGetDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
+import com.gdsc.projectmiobackend.dto.PostMsgDto;
 import com.gdsc.projectmiobackend.dto.request.*;
 import com.gdsc.projectmiobackend.jwt.dto.UserInfo;
 import com.gdsc.projectmiobackend.service.PostService;
@@ -61,9 +62,9 @@ public class PostController {
 
     @Operation(summary = "게시글 삭제")
     @DeleteMapping("post/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id, @AuthenticationPrincipal UserInfo user){
-        this.postService.deletePostList(id, user.getEmail());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<PostMsgDto> delete(@PathVariable Long id, @AuthenticationPrincipal UserInfo user){
+        PostMsgDto postMsgDto = postService.deletePostList(id, user.getEmail());
+        return ResponseEntity.ok(postMsgDto);
     }
 
     @Operation(summary = "게시글 생성 날짜순 전체 조회")
@@ -78,7 +79,7 @@ public class PostController {
     @GetMapping("/readAll")
     public ResponseEntity<Page<PostDto>> readAll(
             @Parameter(hidden = true) Pageable pageable){
-        Page<PostDto> postList = this.postService.findPostList(pageable);
+        Page<PostDto> postList = postService.findPostList(pageable);
 
         return ResponseEntity.ok(postList);
     }
@@ -95,7 +96,7 @@ public class PostController {
     @GetMapping("/readAll/targetDate")
     public ResponseEntity<Page<PostDto>> readAllByTargetDate(
             @Parameter(hidden = true) Pageable pageable){
-        Page<PostDto> postList = this.postService.findPostList(pageable);
+        Page<PostDto> postList = postService.findPostList(pageable);
 
         return ResponseEntity.ok(postList);
     }
@@ -112,7 +113,7 @@ public class PostController {
     @GetMapping("/readAll/cost")
     public ResponseEntity<Page<PostDto>> readAllByCost(
             @Parameter(hidden = true) Pageable pageable){
-        Page<PostDto> postList = this.postService.findPostList(pageable);
+        Page<PostDto> postList = postService.findPostList(pageable);
 
         return ResponseEntity.ok(postList);
     }
@@ -129,7 +130,7 @@ public class PostController {
     @GetMapping("/viewCount")
     public ResponseEntity<Page<PostDto>> readAllByViewCount(
             @Parameter(hidden = true) Pageable pageable){
-        Page<PostDto> postList = this.postService.findPostList(pageable);
+        Page<PostDto> postList = postService.findPostList(pageable);
 
         return ResponseEntity.ok(postList);
     }
@@ -147,7 +148,7 @@ public class PostController {
     public ResponseEntity<Page<PostDto>> readPostsByCategory(
             @Parameter(hidden = true) Pageable pageable,
             @PathVariable Long categoryId){
-        Page<PostDto> postsByCategoryList = this.postService.findByCategoryId(categoryId, pageable);
+        Page<PostDto> postsByCategoryList = postService.findByCategoryId(categoryId, pageable);
 
         return ResponseEntity.ok(postsByCategoryList);
     }
@@ -165,7 +166,7 @@ public class PostController {
     public ResponseEntity<Page<PostDto>> readPostsByUser(
             @Parameter(hidden = true) Pageable pageable,
             @PathVariable Long userId){
-        Page<PostDto> postsByMemberList = this.postService.findByMemberId(userId, pageable);
+        Page<PostDto> postsByMemberList = postService.findByMemberId(userId, pageable);
 
         return ResponseEntity.ok(postsByMemberList);
     }
@@ -179,7 +180,7 @@ public class PostController {
     @Operation(summary = "위도 경도에 포함된 게시글 리스트 조회")
     @GetMapping("post/location")
     public ResponseEntity<List<PostDto>> readPostByLatitudeAndLongitude(@RequestParam("latitude") Double latitude, @RequestParam("longitude") Double longitude){
-        List<PostDto> postList = this.postService.findByLatitudeAndLongitude(latitude, longitude);
+        List<PostDto> postList = postService.findByLatitudeAndLongitude(latitude, longitude);
 
         return ResponseEntity.ok(postList);
     }
@@ -187,7 +188,7 @@ public class PostController {
     @Operation(summary = "위치로 게시글 리스트 조회")
     @GetMapping("post/location2")
     public ResponseEntity<List<PostDto>> readPostByLocation(@RequestParam("location") String location){
-        List<PostDto> postList = this.postService.findByLocation(location);
+        List<PostDto> postList = postService.findByLocation(location);
 
         return ResponseEntity.ok(postList);
     }
@@ -201,20 +202,20 @@ public class PostController {
 
     @Operation(summary = "기사 매너 평가", description = "매너는 GOOD, BAD, NORMAL 중에서 선택해야 합니다.")
     @PostMapping("/post/{postId}/evaluation/driver")
-    public ResponseEntity<?> updateDriverMannerScore(@PathVariable Long postId,
+    public ResponseEntity<PostMsgDto> updateDriverMannerScore(@PathVariable Long postId,
                                                      @AuthenticationPrincipal UserInfo user,
                                                      @RequestBody MannerDriverUpdateRequestDto mannerDriverUpdateRequestDto) {
-        postService.driverUpdateManner(postId, user.getEmail(), mannerDriverUpdateRequestDto);
-        return ResponseEntity.ok().build();
+        PostMsgDto postMsgDto = postService.driverUpdateManner(postId, user.getEmail(), mannerDriverUpdateRequestDto);
+        return ResponseEntity.ok(postMsgDto);
     }
 
     @Operation(summary = "탑승자 매너 평가" , description = "매너는 GOOD, BAD, NORMAL 중에서 선택해야 합니다.")
     @PostMapping("/post/{userId}/evaluation/passenger")
-    public ResponseEntity<?> updatePassengersMannerScore(@PathVariable Long userId,
+    public ResponseEntity<PostMsgDto> updatePassengersMannerScore(@PathVariable Long userId,
                                                          @AuthenticationPrincipal UserInfo user,
                                                          @RequestBody MannerPassengerUpdateRequestDto mannerPassengerUpdateRequestDto) {
-        postService.updateParticipatesManner(userId, mannerPassengerUpdateRequestDto, user.getEmail());
-        return ResponseEntity.ok().build();
+        PostMsgDto postMsgDto = postService.updateParticipatesManner(userId, mannerPassengerUpdateRequestDto, user.getEmail());
+        return ResponseEntity.ok(postMsgDto);
     }
 
     @Operation(summary = "탑승자로 참여한 게시글")
@@ -229,7 +230,7 @@ public class PostController {
     @GetMapping("/post/participate")
     public ResponseEntity<Page<PostDto>> readPostByParticipate(@AuthenticationPrincipal UserInfo user,
                                                                @Parameter(hidden = true) Pageable pageable) {
-        Page<PostDto> postList = this.postService.findByParticipate(user.getEmail(), pageable);
+        Page<PostDto> postList = postService.findByParticipate(user.getEmail(), pageable);
         return ResponseEntity.ok(postList);
     }
 
@@ -245,14 +246,14 @@ public class PostController {
     @GetMapping("/post/review")
     public ResponseEntity<Page<PostDto>> readPostByReview(@AuthenticationPrincipal UserInfo user,
                                                           @Parameter(hidden = true) Pageable pageable) {
-        Page<PostDto> postList = this.postService.reviewsCanBeWritten(user.getEmail(), pageable);
+        Page<PostDto> postList = postService.reviewsCanBeWritten(user.getEmail(), pageable);
         return ResponseEntity.ok(postList);
     }
 
     @Operation(summary = "특정 게시글 가까운 게시글 조회")
     @GetMapping("/post/distance/{postId}")
     public ResponseEntity<List<PostDto>> readPostByDistance(@PathVariable Long postId) {
-        List<PostDto> postList = this.postService.findByDistance(postId);
+        List<PostDto> postList = postService.findByDistance(postId);
         return ResponseEntity.ok(postList);
     }
 }
