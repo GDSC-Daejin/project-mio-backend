@@ -4,9 +4,12 @@ import com.gdsc.projectmiobackend.dto.CommentDto;
 import com.gdsc.projectmiobackend.dto.request.CommentFirstCreateRequestDto;
 import com.gdsc.projectmiobackend.dto.request.CommentPatchRequestDto;
 import com.gdsc.projectmiobackend.dto.request.CommentRequestDto;
+import com.gdsc.projectmiobackend.entity.Alarm;
 import com.gdsc.projectmiobackend.entity.Comment;
 import com.gdsc.projectmiobackend.entity.Post;
 import com.gdsc.projectmiobackend.entity.UserEntity;
+import com.gdsc.projectmiobackend.notification.service.impl.NotificationServiceImpl;
+import com.gdsc.projectmiobackend.repository.AlarmRepository;
 import com.gdsc.projectmiobackend.repository.CommentRepository;
 import com.gdsc.projectmiobackend.repository.PostRepository;
 import com.gdsc.projectmiobackend.repository.UserRepository;
@@ -26,6 +29,9 @@ public class CommentServiceImpl implements CommentService{
 
     private UserRepository userRepository;
 
+    private NotificationServiceImpl notificationService;
+    private final AlarmRepository alarmRepository;
+
     private UserEntity getUser(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("유저정보가 없습니다."));
@@ -44,6 +50,17 @@ public class CommentServiceImpl implements CommentService{
 
         Comment comment = commentRequestDto.toEntity(post, user);
 
+        if(!user.getId().equals(post.getUser().getId())) {
+            notificationService.customNotify(post.getUser().getId(), post.getId()+":"+user.getStudentId()+" 님이 댓글을 작성하셨습니다.", user.getStudentId()+" 님이 댓글을 작성하셨습니다.", "comment");
+            Alarm alarm = Alarm.builder()
+                    .post(post)
+                    .userEntity(post.getUser())
+                    .content(user.getStudentId()+" 님이 댓글을 작성하셨습니다.")
+                    .createDate(LocalDateTime.now())
+                    .build();
+            alarmRepository.save(alarm);
+        }
+
         return commentRepository.save(comment);
     }
 
@@ -55,6 +72,17 @@ public class CommentServiceImpl implements CommentService{
 
         Comment comment = commentRequestDto.toEntity(post, user);
         comment.setParentComment(parentComment);
+
+        if(!user.getId().equals(post.getUser().getId())) {
+            notificationService.customNotify(parentComment.getUser().getId(), post.getId()+":"+user.getStudentId()+" 님이 대댓글을 작성하셨습니다.", user.getStudentId()+" 님이 대댓글을 작성하셨습니다.", "comment");
+            Alarm alarm = Alarm.builder()
+                    .post(post)
+                    .userEntity(parentComment.getUser())
+                    .content(user.getStudentId()+" 님이 대댓글을 작성하셨습니다.")
+                    .createDate(LocalDateTime.now())
+                    .build();
+            alarmRepository.save(alarm);
+        }
         return commentRepository.save(comment);
     }
 

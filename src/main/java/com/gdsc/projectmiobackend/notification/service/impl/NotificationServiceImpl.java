@@ -12,7 +12,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class NotificationServiceImpl {
 
-    private final UserRepository userRepository;
     private final EmitterRepository emitterRepository;
 
 

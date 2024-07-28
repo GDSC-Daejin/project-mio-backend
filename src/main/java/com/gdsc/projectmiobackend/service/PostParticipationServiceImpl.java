@@ -67,7 +67,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .build();
 
         // 게시글 작성자에게 유저 신청 알림
-        notificationService.customNotify(post.getUser().getId(), post.getId(), user.getStudentId() + " 님이 카풀(택시)을 신청하였어요.", "participate");
+        notificationService.customNotify(post.getUser().getId(), post.getId()+":"+user.getStudentId() + " 님이 카풀(택시)을 신청하였어요.", user.getStudentId() + " 님이 카풀(택시)을 신청하였어요.", "participate");
         Alarm alarm = Alarm.builder()
                 .post(post)
                 .userEntity(post.getUser())
@@ -128,7 +128,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         }
 
         // 게시글 작성자에게 카풀을 취소한 사람이 있다는 알림 전송
-        notificationService.customNotify(post.getUser().getId(), post.getId(), user.getStudentId() + " 님이 카풀(택시)을 취소하였어요.", "participate");
+        notificationService.customNotify(post.getUser().getId(), post.getId()+":"+user.getStudentId() + " 님이 카풀(택시)을 취소하였어요.", user.getStudentId() + " 님이 카풀(택시)을 취소하였어요.", "participate");
         Alarm alarm = Alarm.builder()
                 .post(post)
                 .userEntity(post.getUser())
@@ -189,7 +189,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         }*/
 
         // 게시글 참가자에게 승인 알림
-        notificationService.customNotify(participants.getUser().getId(), post.getId(), post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.", "participate");
+        notificationService.customNotify(participants.getUser().getId(), post.getId()+":"+post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.", post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.", "participate");
 
         Alarm alarm = Alarm.builder()
                 .post(post)
@@ -222,7 +222,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
 
         participants.setApprovalOrReject(ApprovalOrReject.REJECT);
         // 게시글 참가자에게 거절 알림
-        notificationService.customNotify(participants.getUser().getId(), post.getId(), post.getTitle() + " 글의 카풀(택시) 신청이 거절되었어요.", "participate");
+        notificationService.customNotify(participants.getUser().getId(), post.getId()+":"+post.getTitle() + " 글의 카풀(택시) 신청이 거절되었어요.", post.getTitle() + " 글의 카풀(택시) 신청이 거절되었어요.", "participate");
 
         Alarm alarm = Alarm.builder()
                 .post(post)
