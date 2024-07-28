@@ -9,7 +9,6 @@ import com.gdsc.projectmiobackend.repository.AlarmRepository;
 import com.gdsc.projectmiobackend.repository.PostRepository;
 import com.gdsc.projectmiobackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,7 +39,8 @@ public class AlarmServiceImpl implements AlarmService{
     @Override
     public List<AlarmDto> getAllAlarm(String email){
         UserEntity user = getUser(email);
-        return alarmRepository.findByUserEntity(user);
+        List<Alarm> alarmList = alarmRepository.findByUserEntity(user);
+        return alarmList.stream().map(Alarm::toDto).toList();
     }
 
     @Override
