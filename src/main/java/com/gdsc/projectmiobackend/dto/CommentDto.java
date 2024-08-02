@@ -14,14 +14,9 @@ import java.util.List;
 public class CommentDto {
 
     private Long commentId;
-
     private String content;
-
     private LocalDateTime createDate;
-
     private Long postId;
-
     private UserEntity user;
-
     private List<CommentDto> childComments;
 }
