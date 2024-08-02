@@ -217,7 +217,10 @@ public class PostServiceImpl implements PostService{
         }
 
         UserEntity user = getUserByEmail(email);
-        participantsRepository.deleteAllByPostId(id);
+
+        if(!participantsRepository.findByPostId(id).isEmpty()) {
+            participantsRepository.deleteAllByPostId(id);
+        }
         postRepository.deletePost(user.getId(), id);
         return new PostMsgDto("게시글 삭제 완료");
     }

@@ -72,7 +72,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 삭제")
-    @DeleteMapping("post/{id}")
+    @PatchMapping("post/delete/{id}")
     public ResponseEntity<PostMsgDto> delete(@PathVariable Long id, @AuthenticationPrincipal UserInfo user){
         PostMsgDto postMsgDto = postService.deletePostList(id, user.getEmail());
         return ResponseEntity.ok(postMsgDto);
