@@ -40,26 +40,4 @@ public class PostDto {
     private Long cost;
     private String isDeleteYN;
     private PostType postType;
-
-    public PostDto(Post post){
-        this.postId = post.getId();
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.createDate = post.getCreateDate();
-        this.targetDate = post.getTargetDate();
-        this.targetTime = post.getTargetTime();
-        this.category = post.getCategory();
-        this.verifyGoReturn = post.getVerifyGoReturn();
-        this.numberOfPassengers = post.getNumberOfPassengers();
-        this.viewCount = post.getViewCount();
-        this.user = post.getUser();
-        this.latitude = post.getLatitude();
-        this.longitude = post.getLongitude();
-        this.bookMarkCount = post.getBookMarkCount();
-        this.participantsCount = post.getParticipantsCount();
-        this.location = post.getLocation();
-        this.cost = post.getCost();
-        this.isDeleteYN = post.getIsDeleteYN();
-        this.postType = post.getPostType();
-    }
 }

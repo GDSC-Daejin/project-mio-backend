@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.dto;
 
 import com.gdsc.projectmiobackend.common.ApprovalOrReject;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ParticipateDto {
     private Long participantId;
     private Long postId;
@@ -19,17 +21,4 @@ public class ParticipateDto {
     private Boolean passengerMannerFinish;
     private Boolean verifyFinish;
     private String isDeleteYN;
-
-    public ParticipateDto(Long participantId, Long postId, Long userId, Long postUserId, String content, ApprovalOrReject approvalOrReject, Boolean driverMannerFinish, Boolean passengerMannerFinish, Boolean verifyFinish, String isDeleteYN) {
-        this.participantId = participantId;
-        this.postId = postId;
-        this.userId = userId;
-        this.postUserId = postUserId;
-        this.content = content;
-        this.approvalOrReject = approvalOrReject;
-        this.driverMannerFinish = driverMannerFinish;
-        this.passengerMannerFinish = passengerMannerFinish;
-        this.verifyFinish = verifyFinish;
-        this.isDeleteYN = isDeleteYN;
-    }
 }

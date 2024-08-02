@@ -46,21 +46,7 @@ public class ParticipantsController {
     public ResponseEntity<List<ParticipateDto>> getParticipantsByPostId(@PathVariable Long postId) {
 
         List<Participants> participants = participantsService.getParticipantsByPostId(postId);
-
-        return ResponseEntity.ok(participants.stream()
-                .map(participant -> new ParticipateDto(
-                        participant.getId()
-                        , participant.getPost().getId()
-                        , participant.getUser().getId()
-                        , participant.getPostUserId()
-                        , participant.getContent()
-                        , participant.getApprovalOrReject()
-                        , participant.getDriverMannerFinish()
-                        , participant.getPassengerMannerFinish()
-                        , participant.getVerifyFinish()
-                        , participant.getIsDeleteYN()
-                ))
-                .collect(Collectors.toList()));
+        return ResponseEntity.ok(participants.stream().map(Participants::toDto).toList());
     }
 
     @Operation(summary = "유저 게시글 참여 취소")

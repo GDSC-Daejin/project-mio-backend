@@ -4,15 +4,14 @@ import com.gdsc.projectmiobackend.common.ApprovalOrReject;
 import com.gdsc.projectmiobackend.dto.ParticipateDto;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Participants {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,19 +45,6 @@ public class Participants {
     private Long postUserId;
 
     private String isDeleteYN;
-
-    @Builder
-    public Participants(Post post, UserEntity user, String content, ApprovalOrReject approvalOrReject, Boolean verifyFinish, Boolean driverMannerFinish, Boolean passengerMannerFinish, Long postUserId, String isDeleteYN) {
-        this.post = post;
-        this.user = user;
-        this.content = content;
-        this.approvalOrReject = approvalOrReject;
-        this.verifyFinish = verifyFinish;
-        this.driverMannerFinish = driverMannerFinish;
-        this.passengerMannerFinish = passengerMannerFinish;
-        this.postUserId = postUserId;
-        this.isDeleteYN = isDeleteYN;
-    }
 
     public ParticipateDto toDto() {
         return ParticipateDto.builder()
