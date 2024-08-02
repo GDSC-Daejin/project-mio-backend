@@ -11,13 +11,11 @@ import com.gdsc.projectmiobackend.service.PostParticipationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
@@ -64,7 +62,6 @@ public class ParticipantsController {
     }
 
     @Operation(summary = "유저가 참여한 게시글 조회")
-    @PageableAsQueryParam
     @GetMapping("/user/participants")
     public ResponseEntity<List<ParticipateDto>> getParticipantsByUserId(@AuthenticationPrincipal UserInfo user) {
 
