@@ -1,5 +1,6 @@
 package com.gdsc.projectmiobackend.dto.request;
 
+import com.gdsc.projectmiobackend.common.PostType;
 import com.gdsc.projectmiobackend.entity.Category;
 import com.gdsc.projectmiobackend.entity.Post;
 import com.gdsc.projectmiobackend.entity.UserEntity;
@@ -43,9 +44,6 @@ public class PostCreateRequestDto {
     @Schema(description = "운전자를 제외한 탑승 인원", example = "3")
     private Integer numberOfPassengers;
 
-    @Schema(description = "도착 여부 false: 진행중 true: 도착", example = "false")
-    private Boolean verifyFinish;
-
     @Schema(description = "위도", example = "37.123456")
     private Double latitude;
 
@@ -67,8 +65,8 @@ public class PostCreateRequestDto {
                 .targetTime(targetTime)
                 .verifyGoReturn(verifyGoReturn)
                 .numberOfPassengers(numberOfPassengers)
+                .participantsCount(0L)
                 .viewCount(0L)
-                .verifyFinish(verifyFinish)
                 .latitude(latitude)
                 .longitude(longitude)
                 .location(location)
@@ -76,6 +74,7 @@ public class PostCreateRequestDto {
                 .isDeleteYN("N")
                 .createDate(LocalDateTime.now())
                 .user(user)
+                .postType(PostType.BEFORE_DEADLINE)
                 .build();
     }
 }

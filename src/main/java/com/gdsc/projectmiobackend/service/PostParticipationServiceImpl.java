@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.service;
 
 import com.gdsc.projectmiobackend.common.ApprovalOrReject;
+import com.gdsc.projectmiobackend.common.PostType;
 import com.gdsc.projectmiobackend.dto.ParticipateMsgDto;
 import com.gdsc.projectmiobackend.dto.ParticipateCheckDto;
 import com.gdsc.projectmiobackend.dto.ParticipateDto;
@@ -49,6 +50,10 @@ public class PostParticipationServiceImpl implements PostParticipationService {
 
         if(participantsRepository.findByPostIdAndUserId(postId, user.getId()) != null){
             throw new IllegalArgumentException("이미 신청한 게시글입니다.");
+        }
+
+        if(!post.getPostType().equals(PostType.BEFORE_DEADLINE)) {
+            throw new IllegalArgumentException("마감된 게시글에 신청할 수 없습니다.");
         }
         /*
         if(Objects.equals(user.getEmail(), post.getUser().getEmail())){
@@ -119,6 +124,10 @@ public class PostParticipationServiceImpl implements PostParticipationService {
 
         if(Objects.equals(post.getTargetDate(), LocalDate.now())){
             throw new IllegalArgumentException("당일 카풀은 취소할 수 없습니다.");
+        }
+
+        if(!post.getPostType().equals(PostType.BEFORE_DEADLINE)) {
+            throw new IllegalArgumentException("이미 마감된 카풀은 취소할 수 없습니다.");
         }
 
         Participants participants = participantsRepository.findByPostIdAndUserId(postId, user.getId());

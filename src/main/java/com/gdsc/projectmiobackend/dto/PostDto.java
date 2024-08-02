@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.dto;
 
 
+import com.gdsc.projectmiobackend.common.PostType;
 import com.gdsc.projectmiobackend.entity.Category;
 import com.gdsc.projectmiobackend.entity.Post;
 import com.gdsc.projectmiobackend.entity.UserEntity;
@@ -30,7 +31,6 @@ public class PostDto {
     private Integer numberOfPassengers;
     private UserEntity user;
     private Long viewCount;
-    private Boolean verifyFinish;
     private List<UserEntity> participants;
     private Double latitude;
     private Double longitude;
@@ -39,6 +39,7 @@ public class PostDto {
     private String location;
     private Long cost;
     private String isDeleteYN;
+    private PostType postType;
 
     public PostDto(Post post){
         this.postId = post.getId();
@@ -52,7 +53,6 @@ public class PostDto {
         this.numberOfPassengers = post.getNumberOfPassengers();
         this.viewCount = post.getViewCount();
         this.user = post.getUser();
-        this.verifyFinish = post.getVerifyFinish();
         this.latitude = post.getLatitude();
         this.longitude = post.getLongitude();
         this.bookMarkCount = post.getBookMarkCount();
@@ -60,5 +60,6 @@ public class PostDto {
         this.location = post.getLocation();
         this.cost = post.getCost();
         this.isDeleteYN = post.getIsDeleteYN();
+        this.postType = post.getPostType();
     }
 }

@@ -64,7 +64,6 @@ public class PostPatchRequestDto {
                 .verifyGoReturn(existingPost.getVerifyGoReturn())
                 .numberOfPassengers(this.numberOfPassengers != null ? this.numberOfPassengers : existingPost.getNumberOfPassengers())
                 .viewCount(existingPost.getViewCount())
-                .verifyFinish(existingPost.getVerifyFinish())
                 .latitude(this.latitude != null ? this.latitude : existingPost.getLatitude())
                 .longitude(this.longitude != null ? this.longitude : existingPost.getLongitude())
                 .bookMarkCount(existingPost.getBookMarkCount())

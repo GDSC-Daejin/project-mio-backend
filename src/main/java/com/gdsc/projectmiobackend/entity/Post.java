@@ -1,5 +1,6 @@
 package com.gdsc.projectmiobackend.entity;
 
+import com.gdsc.projectmiobackend.common.PostType;
 import com.gdsc.projectmiobackend.dto.PostDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,8 +49,6 @@ public class Post {
 
     private Long viewCount;
 
-    private Boolean verifyFinish;
-
     private Double latitude;
 
     private Double longitude;
@@ -63,6 +62,9 @@ public class Post {
     private Long cost;
 
     private String isDeleteYN;
+
+    @Enumerated(EnumType.STRING)
+    private PostType postType;
 
     @ManyToOne
     @JoinColumn
@@ -92,12 +94,12 @@ public class Post {
                 .participantsCount(participantsCount)
                 .user(user)
                 .viewCount(viewCount)
-                .verifyFinish(verifyFinish)
                 .latitude(latitude)
                 .longitude(longitude)
                 .location(location)
                 .cost(cost)
                 .isDeleteYN(isDeleteYN)
+                .postType(postType)
                 .build();
     }
 }

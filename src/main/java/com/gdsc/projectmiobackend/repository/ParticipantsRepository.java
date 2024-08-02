@@ -14,4 +14,6 @@ public interface ParticipantsRepository extends JpaRepository<Participants, Long
     List<Participants> findByPostUserId(Long postUserId);
 
     Participants findByPostIdAndUserId(Long postId, Long userId);
+
+    void deleteAllByPostId(Long postId);
 }

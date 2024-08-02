@@ -22,7 +22,9 @@ public interface PostService {
 
     PostDto updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email);
 
-    PostDto updateFinishById(Long id, PostVerifyFinishRequestDto postPatchRequestDto, String email);
+    PostDto updateTypeChangeById(Long postId,  String email);
+
+    PostDto updateFinishById(Long id, String email);
 
     Page<PostDto> findPostList(Pageable pageable);
 

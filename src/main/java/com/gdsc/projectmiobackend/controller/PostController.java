@@ -4,7 +4,10 @@ package com.gdsc.projectmiobackend.controller;
 import com.gdsc.projectmiobackend.dto.ParticipateGetDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
 import com.gdsc.projectmiobackend.dto.PostMsgDto;
-import com.gdsc.projectmiobackend.dto.request.*;
+import com.gdsc.projectmiobackend.dto.request.MannerDriverUpdateRequestDto;
+import com.gdsc.projectmiobackend.dto.request.MannerPassengerUpdateRequestDto;
+import com.gdsc.projectmiobackend.dto.request.PostCreateRequestDto;
+import com.gdsc.projectmiobackend.dto.request.PostPatchRequestDto;
 import com.gdsc.projectmiobackend.jwt.dto.UserInfo;
 import com.gdsc.projectmiobackend.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,13 +53,21 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
+    @Operation(summary = "게시글 마감 수정")
+    @PatchMapping("post/deadLine/{postId}")
+    public ResponseEntity<PostDto> changePostType(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal UserInfo user) {
+        PostDto post = postService.updateTypeChangeById(postId, user.getEmail());
+        return ResponseEntity.ok(post);
+    }
+
     @Operation(summary = "게시글 완료 수정")
-    @PatchMapping("post/verfiyFinish/{id}")
+    @PatchMapping("post/complete/{id}")
     public ResponseEntity<PostDto> update(
             @PathVariable Long id,
-            @RequestBody PostVerifyFinishRequestDto patchRequestDto,
             @AuthenticationPrincipal UserInfo user){
-        PostDto post = postService.updateFinishById(id, patchRequestDto, user.getEmail());
+        PostDto post = postService.updateFinishById(id, user.getEmail());
         return ResponseEntity.ok(post);
     }
 

@@ -2,10 +2,14 @@ package com.gdsc.projectmiobackend.service;
 
 
 import com.gdsc.projectmiobackend.common.ApprovalOrReject;
+import com.gdsc.projectmiobackend.common.PostType;
 import com.gdsc.projectmiobackend.dto.ParticipateGetDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
 import com.gdsc.projectmiobackend.dto.PostMsgDto;
-import com.gdsc.projectmiobackend.dto.request.*;
+import com.gdsc.projectmiobackend.dto.request.MannerDriverUpdateRequestDto;
+import com.gdsc.projectmiobackend.dto.request.MannerPassengerUpdateRequestDto;
+import com.gdsc.projectmiobackend.dto.request.PostCreateRequestDto;
+import com.gdsc.projectmiobackend.dto.request.PostPatchRequestDto;
 import com.gdsc.projectmiobackend.entity.*;
 import com.gdsc.projectmiobackend.notification.service.impl.NotificationServiceImpl;
 import com.gdsc.projectmiobackend.repository.*;
@@ -17,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,21 +129,38 @@ public class PostServiceImpl implements PostService{
     }
 
     /**
-     * 게시물 마감
-     * @param id
-     * @param postPatchRequestDto
+     * 게시글 마감(신청 끝)
+     * @param postId
      * @param email
-     * @return
+     * @return PostDto
+     */
+    @Override
+    @CacheEvict(value = "postCache", allEntries = true)
+    public PostDto updateTypeChangeById(Long postId, String email) {
+        UserEntity user = getUserByEmail(email);
+        Post post = getPostById(postId);
+        checkPostUser(post, user);
+
+        post.setPostType(PostType.DEADLINE);
+
+        return post.toDto();
+    }
+
+    /**
+     * 게시물 완료(도착)
+     * @param id
+     * @param email
+     * @return PostDto
      */
     @Override
     @CacheEvict(value = "postCache", allEntries=true)
-    public PostDto updateFinishById(Long id, PostVerifyFinishRequestDto postPatchRequestDto, String email){
+    public PostDto updateFinishById(Long id, String email){
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(id);
 
         checkPostUser(post, user);
 
-        post.setVerifyFinish(postPatchRequestDto.getVerifyFinish());
+        post.setPostType(PostType.COMPLETED);
 
         List<Participants> participantsList = post.getParticipants();
 
@@ -175,11 +197,27 @@ public class PostServiceImpl implements PostService{
         return post.toDto();
     }
 
+    /**
+     * 게시글 삭제 isDeleteYN
+     * @param id
+     * @param email
+     * @return PostMsgDto
+     */
     @Override
     @CacheEvict(value = "postCache", allEntries=true)
     public PostMsgDto deletePostList(Long id, String email) {
+        Post post = getPostById(id);
+
+        if(!post.getPostType().equals(PostType.BEFORE_DEADLINE)) {
+            throw new IllegalStateException("마감 후에는 게시글을 지울 수 없습니다.");
+        }
+
+        if(post.getTargetDate().equals(LocalDate.now())) {
+            throw new IllegalStateException("카풀(택시) 당일은 게시글을 지울 수 없습니다.");
+        }
 
         UserEntity user = getUserByEmail(email);
+        participantsRepository.deleteAllByPostId(id);
         postRepository.deletePost(user.getId(), id);
         return new PostMsgDto("게시글 삭제 완료");
     }
@@ -207,6 +245,11 @@ public class PostServiceImpl implements PostService{
         return page.map(Post::toDto);
     }
 
+    /**
+     * 게시글 상세보기
+     * @param id
+     * @return PostDto
+     */
     @Override
     public PostDto showDetailPost(Long id){
         Post post = getPostById(id);
@@ -216,18 +259,36 @@ public class PostServiceImpl implements PostService{
         return post.toDto();
     }
 
+    /**
+     * 위도 & 경도로 게시글 찾기
+     * @param latitude
+     * @param longitude
+     * @return List<PostDto>
+     */
     @Override
     public List<PostDto> findByLatitudeAndLongitude(Double latitude, Double longitude){
         List<Post> postList = postRepository.findByLatitudeAndLongitudeAndIsDeleteYN(latitude, longitude, "N");
         return postList.stream().map(Post::toDto).toList();
     }
 
+    /**
+     * 게시글 현재 승인 유저수
+     * @param postId
+     * @return ParticipateGetDto
+     */
     @Override
     public ParticipateGetDto getApprovalUserCountByPost(Long postId){
         Post post = getPostById(postId);
         return new ParticipateGetDto(post.getParticipantsCount(), post.getNumberOfPassengers());
     }
 
+    /**
+     * 탑승자가 운전자 매너 평가
+     * @param postId
+     * @param email
+     * @param mannerDriverUpdateRequestDto
+     * @return PostMsgDto
+     */
     @Override
     public PostMsgDto driverUpdateManner(Long postId, String email, MannerDriverUpdateRequestDto mannerDriverUpdateRequestDto){
         UserEntity currentUser = getUserByEmail(email);
@@ -238,8 +299,8 @@ public class PostServiceImpl implements PostService{
             currentUser.setMannerCount(0L);
         }
 
-        if(!post.getVerifyFinish()){
-            throw new IllegalStateException("해당 글은 마감되지 않았습니다.");
+        if(!post.getPostType().equals(PostType.COMPLETED)){
+            throw new IllegalStateException("해당 글은 완료되지 않았습니다.");
         }
 
         List<Participants> participants = post.getParticipants();
@@ -301,6 +362,13 @@ public class PostServiceImpl implements PostService{
         return new PostMsgDto("운전자 평가 완료");
     }
 
+    /**
+     * 운전자가 탑승자 매너 평가
+     * @param userId
+     * @param mannerPassengerUpdateRequestDto
+     * @param email
+     * @return PostMsgDto
+     */
     @Override
     public PostMsgDto updateParticipatesManner(Long userId, MannerPassengerUpdateRequestDto mannerPassengerUpdateRequestDto, String email){
         UserEntity targetUser = userRepository.findById(userId)
@@ -316,6 +384,10 @@ public class PostServiceImpl implements PostService{
 
         if(participants.getPassengerMannerFinish()){
             throw new IllegalStateException("이미 평가한 유저입니다.");
+        }
+
+        if(!participants.getPost().getPostType().equals(PostType.COMPLETED)){
+            throw new IllegalStateException("해당 글은 완료되지 않았습니다.");
         }
 
         if(currentUser.getMannerCount() == null){
