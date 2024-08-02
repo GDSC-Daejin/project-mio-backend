@@ -217,10 +217,7 @@ public class PostServiceImpl implements PostService{
         }
 
         UserEntity user = getUserByEmail(email);
-
-        if(!participantsRepository.findByPostId(id).isEmpty()) {
-            participantsRepository.deleteAllByPostId(id);
-        }
+        participantsRepository.deletePostParticipant(id);
         postRepository.deletePost(user.getId(), id);
         return new PostMsgDto("게시글 삭제 완료");
     }
@@ -379,7 +376,7 @@ public class PostServiceImpl implements PostService{
         UserEntity currentUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("로그인 유저정보가 없습니다."));
 
-        Participants participants = participantsRepository.findByPostIdAndUserId(mannerPassengerUpdateRequestDto.getPostId(), userId);
+        Participants participants = participantsRepository.findByPostIdAndUserIdAndIsDeleteYN(mannerPassengerUpdateRequestDto.getPostId(), userId, "N");
 
         if (Objects.equals(targetUser.getEmail(), currentUser.getEmail())) {
             throw new IllegalStateException("자기 자신을 평가할 수 없습니다.");
@@ -458,7 +455,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public Page<PostDto> findByParticipate(String email, Pageable pageable){
         UserEntity user = this.userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
-        List<Participants> participants = this.participantsRepository.findByUserId(user.getId());
+        List<Participants> participants = this.participantsRepository.findByUserIdAndIsDeleteYN(user.getId(), "N");
         return new PageImpl<>(participants.stream().map(Participants::getPost).map(Post::toDto).toList(), pageable, participants.size());
     }
 
@@ -478,10 +475,10 @@ public class PostServiceImpl implements PostService{
         UserEntity user = getUserByEmail(email);
 
         // 탑승자로 참여한 리스트
-        List<Participants> participants = this.participantsRepository.findByUserId(user.getId());
+        List<Participants> participants = this.participantsRepository.findByUserIdAndIsDeleteYN(user.getId(), "N");
 
         // 운전자로 참여한 리스트
-        List<Participants> participants1 = this.participantsRepository.findByPostUserId(user.getId());
+        List<Participants> participants1 = this.participantsRepository.findByPostUserIdAndIsDeleteYN(user.getId(), "N");
 
         List<Post> posts = new ArrayList<>();
 

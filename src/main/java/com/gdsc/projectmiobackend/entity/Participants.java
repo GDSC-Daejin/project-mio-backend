@@ -45,8 +45,10 @@ public class Participants {
     @Nullable
     private Long postUserId;
 
+    private String isDeleteYN;
+
     @Builder
-    public Participants(Post post, UserEntity user, String content, ApprovalOrReject approvalOrReject, Boolean verifyFinish, Boolean driverMannerFinish, Boolean passengerMannerFinish, Long postUserId) {
+    public Participants(Post post, UserEntity user, String content, ApprovalOrReject approvalOrReject, Boolean verifyFinish, Boolean driverMannerFinish, Boolean passengerMannerFinish, Long postUserId, String isDeleteYN) {
         this.post = post;
         this.user = user;
         this.content = content;
@@ -55,6 +57,7 @@ public class Participants {
         this.driverMannerFinish = driverMannerFinish;
         this.passengerMannerFinish = passengerMannerFinish;
         this.postUserId = postUserId;
+        this.isDeleteYN = isDeleteYN;
     }
 
     public ParticipateDto toDto() {
@@ -68,6 +71,7 @@ public class Participants {
                 .passengerMannerFinish(passengerMannerFinish)
                 .postUserId(postUserId)
                 .verifyFinish(verifyFinish)
+                .isDeleteYN(isDeleteYN)
                 .build();
     }
 }

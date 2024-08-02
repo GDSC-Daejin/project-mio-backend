@@ -48,7 +48,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         UserEntity user = getUser(email);
         Post post = getPost(postId);
 
-        if(participantsRepository.findByPostIdAndUserId(postId, user.getId()) != null){
+        if(participantsRepository.findByPostIdAndUserIdAndIsDeleteYN(postId, user.getId(), "N") != null){
             throw new IllegalArgumentException("이미 신청한 게시글입니다.");
         }
 
@@ -69,6 +69,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .driverMannerFinish(false)
                 .passengerMannerFinish(false)
                 .postUserId(post.getUser().getId())
+                .isDeleteYN("N")
                 .build();
 
         // 게시글 작성자에게 유저 신청 알림
@@ -90,7 +91,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         UserEntity user = getUser(email);
         Post post = getPost(postId);
 
-        List<Participants> participants1 = participantsRepository.findByUserId(user.getId());
+        List<Participants> participants1 = participantsRepository.findByUserIdAndIsDeleteYN(user.getId(), "N");
 
         ParticipateCheckDto participateCheckDto = new ParticipateCheckDto();
 
@@ -108,7 +109,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
 
     @Override
     public List<Participants> getParticipantsByPostId(Long postId) {
-        List<Participants> participants = participantsRepository.findByPostId(postId);
+        List<Participants> participants = participantsRepository.findByPostIdAndIsDeleteYN(postId, "N");
 
         if(participants == null){
             throw new IllegalArgumentException("해당 게시글에 참여한 유저가 없습니다.");
@@ -117,6 +118,12 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         return participants;
     }
 
+    /**
+     * 게시글 신청 취소
+     * @param postId
+     * @param email
+     * @return ParticipateMsgDto
+     */
     @Override
     public ParticipateMsgDto cancelParticipateInPost(Long postId, String email) {
         UserEntity user = getUser(email);
@@ -130,7 +137,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
             throw new IllegalArgumentException("이미 마감된 카풀은 취소할 수 없습니다.");
         }
 
-        Participants participants = participantsRepository.findByPostIdAndUserId(postId, user.getId());
+        Participants participants = participantsRepository.findByPostIdAndUserIdAndIsDeleteYN(postId, user.getId(), "N");
 
         if(participants.getApprovalOrReject() == ApprovalOrReject.APPROVAL){
             post.setParticipantsCount(post.getParticipantsCount() - 1);
@@ -145,14 +152,14 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
-        participantsRepository.delete(participants);
+        participantsRepository.deleteParticipant(participants.getId());
 
         return new ParticipateMsgDto("게시글 참여 취소 완료");
     }
 
     @Override
     public List<ParticipateDto> getPostIdsByUserEmail(String email) {
-        List<Participants> participants = participantsRepository.findPostListByUserId(getUser(email).getId());
+        List<Participants> participants = participantsRepository.findPostListByUserIdAndIsDeleteYN(getUser(email).getId(), "N");
         List<ParticipateDto> newParticipants = new ArrayList<>();
         for (Participants participant : participants) {
             if(participant.getPostUserId() != participant.getUser().getId()){
@@ -184,10 +191,18 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         }
 
         participants.setApprovalOrReject(ApprovalOrReject.APPROVAL);
-
-        // 게시글 신청 승인 수 업데이트
         post.setParticipantsCount(post.getParticipantsCount() + 1);
-        postRepository.save(post);
+        //UserEntity user = participants.getUser();
+
+/*
+        List<Participants> participants1 = participantsRepository.findByUserId(user.getId());
+
+        for (Participants p : participants1) {
+            if (!p.getId().equals(participateId)) {
+                if(!p.getVerifyFinish())
+                    participantsRepository.delete(p);
+            }
+        }*/
 
         // 게시글 참가자에게 승인 알림
         notificationService.customNotify(participants.getUser().getId(), post.getId()+":"+post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.", post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.", "participate");
@@ -205,6 +220,12 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         return new ParticipateMsgDto("참여를 승인하였습니다.");
     }
 
+    /**
+     * 게시글 참여 거절
+     * @param participateId
+     * @param email
+     * @return ParticipateMsgDto
+     */
     public ParticipateMsgDto rejectParticipateInPost(Long participateId, String email){
         Participants participants = participantsRepository.findById(participateId).orElseThrow(() -> new IllegalArgumentException("해당 참여 정보가 없습니다 : " + participateId));
         Post post = participants.getPost().getUser().getEmail().equals(email) ? participants.getPost() : null;
@@ -233,7 +254,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .build();
         alarmRepository.save(alarm);
 
-        participantsRepository.delete(participants);
+        participantsRepository.deleteParticipant(participants.getId());
 
         return new ParticipateMsgDto("참여를 거절하였습니다.");
     }
@@ -242,7 +263,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
     @Override
     public List<PostDto> getApprovalUser(String email){
         UserEntity user = getUser(email);
-        List<Participants> participants = participantsRepository.findByUserId(user.getId());
+        List<Participants> participants = participantsRepository.findByUserIdAndIsDeleteYN(user.getId(), "N");
         List<PostDto> postList = new ArrayList<>();
         if(participants.isEmpty()){
             throw new IllegalArgumentException("해당 유저는 참여한 게시글이 없습니다.");

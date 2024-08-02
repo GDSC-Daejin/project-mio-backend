@@ -18,9 +18,9 @@ public class ParticipateDto {
     private Boolean driverMannerFinish;
     private Boolean passengerMannerFinish;
     private Boolean verifyFinish;
+    private String isDeleteYN;
 
-
-    public ParticipateDto(Long participantId, Long postId, Long userId, Long postUserId, String content, ApprovalOrReject approvalOrReject, Boolean driverMannerFinish, Boolean passengerMannerFinish, Boolean verifyFinish) {
+    public ParticipateDto(Long participantId, Long postId, Long userId, Long postUserId, String content, ApprovalOrReject approvalOrReject, Boolean driverMannerFinish, Boolean passengerMannerFinish, Boolean verifyFinish, String isDeleteYN) {
         this.participantId = participantId;
         this.postId = postId;
         this.userId = userId;
@@ -30,5 +30,6 @@ public class ParticipateDto {
         this.driverMannerFinish = driverMannerFinish;
         this.passengerMannerFinish = passengerMannerFinish;
         this.verifyFinish = verifyFinish;
+        this.isDeleteYN = isDeleteYN;
     }
 }

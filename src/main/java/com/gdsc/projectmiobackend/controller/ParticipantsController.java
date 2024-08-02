@@ -28,8 +28,8 @@ public class ParticipantsController {
     @Operation(summary = "유저 게시글 참여")
     @PostMapping("/{postId}/participate")
     public ResponseEntity<ParticipateDto> participateInPost(@PathVariable Long postId,
-                                                    @RequestBody ParticipateCreateRequestDto participateCreateRequestDto,
-                                                    @AuthenticationPrincipal UserInfo user) {
+                                                            @RequestBody ParticipateCreateRequestDto participateCreateRequestDto,
+                                                            @AuthenticationPrincipal UserInfo user) {
         ParticipateDto participateDto = participantsService.participateInPost(postId, user.getEmail(), participateCreateRequestDto.getContent());
         return ResponseEntity.ok(participateDto);
     }
@@ -58,19 +58,20 @@ public class ParticipantsController {
                         , participant.getDriverMannerFinish()
                         , participant.getPassengerMannerFinish()
                         , participant.getVerifyFinish()
+                        , participant.getIsDeleteYN()
                 ))
                 .collect(Collectors.toList()));
     }
 
     @Operation(summary = "유저 게시글 참여 취소")
-    @DeleteMapping("/{postId}/participate")
+    @PatchMapping("/{postId}/participate")
     public ResponseEntity<ParticipateMsgDto> cancelParticipateInPost(@PathVariable Long postId, @AuthenticationPrincipal UserInfo user) {
         ParticipateMsgDto participateMsgDto = participantsService.cancelParticipateInPost(postId, user.getEmail());
         return ResponseEntity.ok(participateMsgDto);
     }
 
     @Operation(summary = "참여 거절하기")
-    @DeleteMapping("/{participantId}/reject")
+    @PatchMapping("/{participantId}/reject")
     public ResponseEntity<ParticipateMsgDto> rejectParticipateInPost(@PathVariable Long participantId, @AuthenticationPrincipal UserInfo user) {
         ParticipateMsgDto participateMsgDto = participantsService.rejectParticipateInPost(participantId, user.getEmail());
         return ResponseEntity.ok(participateMsgDto);
