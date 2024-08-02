@@ -75,6 +75,7 @@ public class PostCreateRequestDto {
                 .createDate(LocalDateTime.now())
                 .user(user)
                 .postType(PostType.BEFORE_DEADLINE)
+                .bookMarkCount(0L)
                 .build();
     }
 }

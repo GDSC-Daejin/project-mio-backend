@@ -184,18 +184,10 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         }
 
         participants.setApprovalOrReject(ApprovalOrReject.APPROVAL);
+
+        // 게시글 신청 승인 수 업데이트
         post.setParticipantsCount(post.getParticipantsCount() + 1);
-        //UserEntity user = participants.getUser();
-
-/*
-        List<Participants> participants1 = participantsRepository.findByUserId(user.getId());
-
-        for (Participants p : participants1) {
-            if (!p.getId().equals(participateId)) {
-                if(!p.getVerifyFinish())
-                    participantsRepository.delete(p);
-            }
-        }*/
+        postRepository.save(post);
 
         // 게시글 참가자에게 승인 알림
         notificationService.customNotify(participants.getUser().getId(), post.getId()+":"+post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.", post.getTitle() + " 글의 카풀(택시) 신청이 승인되었어요.", "participate");
