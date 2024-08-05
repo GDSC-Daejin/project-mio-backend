@@ -99,6 +99,7 @@ public class Post {
                 .cost(cost)
                 .isDeleteYN(isDeleteYN)
                 .postType(postType)
+                .bookMarkCount(bookMarkCount)
                 .build();
     }
 }
