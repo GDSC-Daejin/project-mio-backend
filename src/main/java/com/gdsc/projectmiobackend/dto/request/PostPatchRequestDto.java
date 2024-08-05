@@ -73,6 +73,7 @@ public class PostPatchRequestDto {
                 .isDeleteYN(existingPost.getIsDeleteYN())
                 .category(category != null ? category : existingPost.getCategory())
                 .user(existingPost.getUser())
+                .postType(existingPost.getPostType())
                 .build();
     }
 }

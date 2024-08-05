@@ -169,7 +169,11 @@ public class PostServiceImpl implements PostService{
                 participants.setApprovalOrReject(ApprovalOrReject.FINISH);
                 participants.setVerifyFinish(true);
                 // 카풀이 완료되어 탑승자들에게 후기 작성하라는 알림 발송
-                notificationService.customNotify(participants.getUser().getId(), post.getId()+":"+post.getUser().getStudentId() + " 님과의 카풀은 어떠셨나요? 후기를 작성해주세요.", post.getUser().getStudentId() + " 님과의 카풀은 어떠셨나요? 후기를 작성해주세요.", "participate");
+                notificationService.customNotify(
+                        participants.getUser().getId(),
+                        post.getId()+":"+post.getUser().getStudentId() + " 님과의 카풀은 어떠셨나요? 후기를 작성해주세요.",
+                        post.getUser().getStudentId() + " 님과의 카풀은 어떠셨나요? 후기를 작성해주세요.",
+                        "participate");
                 Alarm alarm = Alarm.builder()
                         .post(post)
                         .userEntity(participants.getUser())
@@ -184,7 +188,10 @@ public class PostServiceImpl implements PostService{
         }
 
         // 카풀 종료시 운전자에게 후기 작성하라는 알림 발송
-        notificationService.customNotify(post.getUser().getId(), post.getId()+":"+"오늘 카풀은 어떠셨나요? 탑승자분들의 후기를 작성해주세요.", "오늘 카풀은 어떠셨나요? 탑승자분들의 후기를 작성해주세요.", "participate");
+        notificationService.customNotify(
+                post.getUser().getId(),
+                post.getId()+":"+"오늘 카풀은 어떠셨나요? 탑승자분들의 후기를 작성해주세요.",
+                "오늘 카풀은 어떠셨나요? 탑승자분들의 후기를 작성해주세요.", "participate");
         Alarm alarm = Alarm.builder()
                 .post(post)
                 .userEntity(post.getUser())
