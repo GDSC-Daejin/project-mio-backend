@@ -153,6 +153,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .build();
         alarmRepository.save(alarm);
         participantsRepository.deleteParticipant(participants.getId());
+        postRepository.save(post);
 
         return new ParticipateMsgDto("게시글 참여 취소 완료");
     }
