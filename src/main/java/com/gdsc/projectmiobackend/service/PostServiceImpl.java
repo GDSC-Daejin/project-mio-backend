@@ -237,7 +237,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    @Cacheable(value="postCache", key="#pageable")
+    @Cacheable(value="postCache", key="#categoryId + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findByCategoryId(Long categoryId, Pageable pageable){
         Category category = this.categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다. " + categoryId));
