@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -19,6 +18,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByCategoryAndIsDeleteYN(Category category, Pageable pageable, String isDeleteYN);
 
     Page<Post> findByUserAndIsDeleteYN(UserEntity user, Pageable pageable, String isDeleteYN);
+
+    @Query("SELECT p FROM Post p WHERE p.region3Depth = :activityLocation AND p.isDeleteYN = :isDeleteYN")
+    Page<Post> findByLocation(Pageable pageable, String isDeleteYN, String activityLocation);
 
     List<Post> findByLatitudeAndLongitudeAndIsDeleteYN(Double latitude, Double longitude, String isDeleteYN);
 

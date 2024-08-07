@@ -53,6 +53,9 @@ public class PostPatchRequestDto {
     @Schema(description = "비용", example = "3000")
     private Long cost;
 
+    @Schema(description = "동", example = "하계동")
+    private String region3Depth;
+
     public Post toEntity(Post existingPost, Category category) {
         return Post.builder()
                 .id(existingPost.getId())
@@ -74,6 +77,7 @@ public class PostPatchRequestDto {
                 .category(category != null ? category : existingPost.getCategory())
                 .user(existingPost.getUser())
                 .postType(existingPost.getPostType())
+                .region3Depth(existingPost.getRegion3Depth())
                 .build();
     }
 }

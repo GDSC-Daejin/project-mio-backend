@@ -62,6 +62,8 @@ public class Post {
 
     private String isDeleteYN;
 
+    private String region3Depth;
+
     @Enumerated(EnumType.STRING)
     private PostType postType;
 
@@ -100,6 +102,7 @@ public class Post {
                 .isDeleteYN(isDeleteYN)
                 .postType(postType)
                 .bookMarkCount(bookMarkCount)
+
                 .build();
     }
 }

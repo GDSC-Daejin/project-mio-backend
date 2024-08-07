@@ -28,6 +28,8 @@ public interface PostService {
 
     Page<PostDto> findPostList(Pageable pageable);
 
+    Page<PostDto> findByRegion3Depth(String email, Pageable pageable);
+
     Page<PostDto> findByCategoryId(Long categoryId, Pageable pageable);
 
     Page<PostDto> findByMemberId(Long userId, Pageable pageable);

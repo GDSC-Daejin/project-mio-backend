@@ -56,6 +56,9 @@ public class PostCreateRequestDto {
     @Schema(description = "요금", example = "3000")
     private Long cost;
 
+    @Schema(description = "동", example = "하계동")
+    private String region3Depth;
+
     public Post toEntity(UserEntity user, Category category){
         return Post.builder()
                 .category(category)
@@ -76,6 +79,7 @@ public class PostCreateRequestDto {
                 .user(user)
                 .postType(PostType.BEFORE_DEADLINE)
                 .bookMarkCount(0L)
+                .region3Depth(region3Depth)
                 .build();
     }
 }

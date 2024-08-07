@@ -182,6 +182,24 @@ public class PostController {
         return ResponseEntity.ok(postsByMemberList);
     }
 
+    @Operation(summary = "유저 활동지역으로 검색하는 게시글 생성순 조회")
+    @Parameters({
+            @Parameter(name = "sort", description = "sort specification",
+                    in = ParameterIn.QUERY, schema = @Schema(type = "createDate,desc"), example = "createDate,desc"),
+            @Parameter(name = "page", description = "page number",
+                    in = ParameterIn.QUERY, schema = @Schema(type = "integer", defaultValue = "0")),
+            @Parameter(name = "size", description = "page size",
+                    in = ParameterIn.QUERY, schema = @Schema(type = "integer", defaultValue = "5"))
+    })
+    @GetMapping("/activityLocation")
+    public ResponseEntity<Page<PostDto>> readPostsByActivityLocation(
+            @Parameter(hidden = true) Pageable pageable,
+            @AuthenticationPrincipal UserInfo user){
+        Page<PostDto> postsByActivityLocation = postService.findByRegion3Depth(user.getEmail(), pageable);
+
+        return ResponseEntity.ok(postsByActivityLocation);
+    }
+
     @Operation(summary = "게시글 ID로 상세 조회")
     @GetMapping("detail/{id}")
     public ResponseEntity<PostDto> getPostById(@PathVariable Long id){

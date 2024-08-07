@@ -3,7 +3,6 @@ package com.gdsc.projectmiobackend.dto;
 
 import com.gdsc.projectmiobackend.common.PostType;
 import com.gdsc.projectmiobackend.entity.Category;
-import com.gdsc.projectmiobackend.entity.Post;
 import com.gdsc.projectmiobackend.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,4 +39,6 @@ public class PostDto {
     private Long cost;
     private String isDeleteYN;
     private PostType postType;
+    private String region3Depth;
+
 }
