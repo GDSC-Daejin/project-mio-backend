@@ -32,7 +32,7 @@ public class ParticipantsController {
         return ResponseEntity.ok(participateDto);
     }
 
-    @Operation(summary = "같은 날 신청하려는 게시글과 같은 등/하교 승인된 게시글이 있는지 확인")
+    @Operation(summary = "같은 날 신청하려는 게시글과 같은 등/하교 승인된 게시글이 있는지 확인(있다면 false 없으면 true)")
     @GetMapping("/{postId}/check")
     public ResponseEntity<ParticipateCheckDto> checkParticipate(@PathVariable Long postId, @AuthenticationPrincipal UserInfo user) {
         ParticipateCheckDto participateCheckDto = participantsService.checkParticipate(postId, user.getEmail());

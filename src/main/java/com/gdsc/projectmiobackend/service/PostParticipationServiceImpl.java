@@ -86,6 +86,12 @@ public class PostParticipationServiceImpl implements PostParticipationService {
         return participants.toDto();
     }
 
+    /**
+     * 신청한 게시글이 있을 시 false, 없다면 true
+     * @param postId
+     * @param email
+     * @return
+     */
     @Override
     public ParticipateCheckDto checkParticipate(Long postId, String email){
         UserEntity user = getUser(email);
