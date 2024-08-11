@@ -143,6 +143,8 @@ public class PostServiceImpl implements PostService{
 
         post.setPostType(PostType.DEADLINE);
 
+        postRepository.save(post);
+
         return post.toDto();
     }
 
