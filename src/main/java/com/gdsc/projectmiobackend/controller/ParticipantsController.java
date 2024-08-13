@@ -48,7 +48,7 @@ public class ParticipantsController {
     }
 
     @Operation(summary = "유저 게시글 참여 취소")
-    @PatchMapping("/{postId}/participate")
+    @PatchMapping("/{postId}/participateCancel")
     public ResponseEntity<ParticipateMsgDto> cancelParticipateInPost(@PathVariable Long postId, @AuthenticationPrincipal UserInfo user) {
         ParticipateMsgDto participateMsgDto = participantsService.cancelParticipateInPost(postId, user.getEmail());
         return ResponseEntity.ok(participateMsgDto);
@@ -70,7 +70,7 @@ public class ParticipantsController {
     }
 
     @Operation(summary = "게시글 참여 승인")
-    @PatchMapping("/{participantId}/participate")
+    @PatchMapping("/{participantId}/participateAccept")
     public ResponseEntity<ParticipateMsgDto> participateInParticipant(@PathVariable Long participantId, @AuthenticationPrincipal UserInfo user) {
         ParticipateMsgDto participateMsgDto = participantsService.participateApproval(participantId, user.getEmail());
         return ResponseEntity.ok(participateMsgDto);
