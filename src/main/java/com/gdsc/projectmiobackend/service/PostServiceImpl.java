@@ -81,6 +81,14 @@ public class PostServiceImpl implements PostService{
         return getPostById(id);
     }
 
+    /**
+     * 게시글 생성 및 작성자 참여
+     * @param postCreateRequestDto
+     * @param categoryId
+     * @param email
+     * @return
+     */
+
     @Override
     @CacheEvict(value = "postCache", allEntries=true)
     public PostDto addPost(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email){
@@ -97,6 +105,7 @@ public class PostServiceImpl implements PostService{
                 .driverMannerFinish(false)
                 .passengerMannerFinish(false)
                 .postUserId(user.getId())
+                .isDeleteYN("N")
                 .build();
 
         postRepository.save(post);
