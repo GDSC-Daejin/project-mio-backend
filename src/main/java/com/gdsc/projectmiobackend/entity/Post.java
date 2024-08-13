@@ -78,7 +78,7 @@ public class Post {
     @JoinColumn
     private UserEntity user;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Participants> participants;
 
     public PostDto toDto() {
