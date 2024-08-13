@@ -102,6 +102,7 @@ public class Post {
                 .isDeleteYN(isDeleteYN)
                 .postType(postType)
                 .bookMarkCount(bookMarkCount)
+                .region3Depth(region3Depth)
 
                 .build();
     }
