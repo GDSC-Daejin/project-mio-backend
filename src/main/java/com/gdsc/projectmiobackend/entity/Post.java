@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.entity;
 
 import com.gdsc.projectmiobackend.common.PostType;
+import com.gdsc.projectmiobackend.dto.ParticipateDto;
 import com.gdsc.projectmiobackend.dto.PostDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -83,13 +85,12 @@ public class Post {
 
     public PostDto toDto() {
 
-        List<Long> participantIds = participants.stream()
-                .filter(participant -> participant.getIsDeleteYN().equals("N") &&
-                        !participant.getUser().getEmail().equals(user.getEmail())
+        List<ParticipateDto> participantsList = participants.stream()
+                .map(Participants::toDto)
+                .filter(participants -> participants.getIsDeleteYN().equals("N") &&
+                        !participants.getUserId().equals(user.getId())
                 )
-                .map(Participants::getId)
                 .toList();
-
         return PostDto.builder()
                 .postId(id)
                 .title(title)
@@ -101,7 +102,7 @@ public class Post {
                 .verifyGoReturn(verifyGoReturn)
                 .numberOfPassengers(numberOfPassengers)
                 .participantsCount(participantsCount)
-                .participantsId(participantIds)
+                .participants(participantsList)
                 .user(user)
                 .viewCount(viewCount)
                 .latitude(latitude)
