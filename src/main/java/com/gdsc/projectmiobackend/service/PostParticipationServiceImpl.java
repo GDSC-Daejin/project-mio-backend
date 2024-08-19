@@ -221,9 +221,8 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
-
         participantsRepository.save(participants);
-
+        postRepository.save(post);
         return new ParticipateMsgDto("참여를 승인하였습니다.");
     }
 
@@ -260,8 +259,8 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .createDate(LocalDateTime.now())
                 .build();
         alarmRepository.save(alarm);
-
         participantsRepository.deleteParticipant(participants.getId());
+        postRepository.save(post);
 
         return new ParticipateMsgDto("참여를 거절하였습니다.");
     }
