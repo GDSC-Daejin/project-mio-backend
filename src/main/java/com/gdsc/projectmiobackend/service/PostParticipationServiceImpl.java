@@ -159,6 +159,10 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .build();
         alarmRepository.save(alarm);
         participantsRepository.deleteParticipant(participants.getId());
+
+        List<Participants> participantsList = post.getParticipants();
+        participantsList.remove(participants);
+        post.setParticipants(participantsList);
         postRepository.save(post);
 
         return new ParticipateMsgDto("게시글 참여 취소 완료");
@@ -222,7 +226,15 @@ public class PostParticipationServiceImpl implements PostParticipationService {
                 .build();
         alarmRepository.save(alarm);
         participantsRepository.save(participants);
+
+        List<Participants> participantsList = post.getParticipants();
+        if (participantsList == null) {
+            participantsList = new ArrayList<>();
+        }
+        participantsList.add(participants);
+        post.setParticipants(participantsList);
         postRepository.save(post);
+
         return new ParticipateMsgDto("참여를 승인하였습니다.");
     }
 
