@@ -3,6 +3,7 @@ package com.gdsc.projectmiobackend.dto;
 
 import com.gdsc.projectmiobackend.common.PostType;
 import com.gdsc.projectmiobackend.entity.Category;
+import com.gdsc.projectmiobackend.entity.Participants;
 import com.gdsc.projectmiobackend.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,7 @@ public class PostDto {
     private Integer numberOfPassengers;
     private UserEntity user;
     private Long viewCount;
-    private List<UserEntity> participants;
+    private List<Long> participantsId;
     private Double latitude;
     private Double longitude;
     private Long bookMarkCount;

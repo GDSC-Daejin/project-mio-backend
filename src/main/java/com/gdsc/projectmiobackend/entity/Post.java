@@ -71,7 +71,7 @@ public class Post {
     @JoinColumn
     private Category category;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Comment> commentList;
 
     @ManyToOne
@@ -82,6 +82,14 @@ public class Post {
     private List<Participants> participants;
 
     public PostDto toDto() {
+
+        List<Long> participantIds = participants.stream()
+                .filter(participant -> participant.getIsDeleteYN().equals("N") &&
+                        !participant.getUser().getEmail().equals(user.getEmail())
+                )
+                .map(Participants::getId)
+                .toList();
+
         return PostDto.builder()
                 .postId(id)
                 .title(title)
@@ -93,6 +101,7 @@ public class Post {
                 .verifyGoReturn(verifyGoReturn)
                 .numberOfPassengers(numberOfPassengers)
                 .participantsCount(participantsCount)
+                .participantsId(participantIds)
                 .user(user)
                 .viewCount(viewCount)
                 .latitude(latitude)
