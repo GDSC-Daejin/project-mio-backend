@@ -248,7 +248,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    @Cacheable(value="postCache", key="#categoryId + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    @Cacheable(value="postCache", key="#categoryId + 'category_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findByCategoryId(Long categoryId, Pageable pageable){
         Category category = this.categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다. " + categoryId));
@@ -257,7 +257,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    @Cacheable(value="postCache", key="#userId + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    @Cacheable(value="postCache", key="#userId + 'userId_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findByMemberId(Long userId, Pageable pageable){
         UserEntity user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저정보가 없습니다. 아이디: " + userId));
@@ -266,7 +266,6 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    @Cacheable(value="postCache", key="#email + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findByRegion3Depth(String email, Pageable pageable){
         UserEntity user = getUserByEmail(email);
         Page<Post> page = postRepository.findByLocation(pageable, "N", user.getActivityLocation());
