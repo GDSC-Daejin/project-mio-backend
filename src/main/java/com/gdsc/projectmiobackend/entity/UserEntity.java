@@ -61,6 +61,8 @@ public class UserEntity{
         this.name = userInfo.getName();
         this.roleType = RoleType.MEMBER;
         this.status = Status.ACTIVE;
+        this.mannerCount = 40L;
+        this.grade = "B";
     }
 
     public UserDto toDto(){
