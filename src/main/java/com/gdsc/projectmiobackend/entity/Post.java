@@ -85,12 +85,15 @@ public class Post {
 
     public PostDto toDto() {
 
-        List<ParticipateDto> participantsList = participants.stream()
+        // participants가 null이면 빈 리스트로 초기화
+        List<ParticipateDto> participantsList = (participants != null)
+                ? participants.stream()
                 .map(Participants::toDto)
-                .filter(participants -> participants.getIsDeleteYN().equals("N") &&
-                        !participants.getUserId().equals(user.getId())
+                .filter(participant -> participant.getIsDeleteYN().equals("N") &&
+                        !participant.getUserId().equals(user.getId())
                 )
-                .toList();
+                .toList()
+                : new ArrayList<>(); // null이면 빈 리스트로 처리
         return PostDto.builder()
                 .postId(id)
                 .title(title)

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -30,7 +31,6 @@ public class PostDto {
     private Integer numberOfPassengers;
     private UserEntity user;
     private Long viewCount;
-    private List<ParticipateDto> participants;
     private Double latitude;
     private Double longitude;
     private Long bookMarkCount;
@@ -41,4 +41,6 @@ public class PostDto {
     private PostType postType;
     private String region3Depth;
 
+    @Builder.Default
+    private List<ParticipateDto> participants = Collections.emptyList(); // 기본값을 빈 리스트로 설정
 }
