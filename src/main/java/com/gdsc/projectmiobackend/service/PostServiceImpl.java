@@ -453,29 +453,22 @@ public class PostServiceImpl implements PostService{
     }
 
     private String calculateGrade(Long mannerCount) {
-        if (mannerCount <= -1) {
-            return "F";
-        } else if (mannerCount <= 9) {
-            return "D";
-        } else if (mannerCount <= 19) {
-            return "D+";
-        } else if (mannerCount <= 29) {
-            return "C";
-        } else if (mannerCount <= 39) {
-            return "C+";
-        } else if (mannerCount <= 49) {
-            return "B";
-        } else if (mannerCount <= 59) {
-            return "B+";
-        } else if (mannerCount <= 69) {
-            return "A";
-        } else if (mannerCount <= 79) {
-            return "A+";
-        } else if (mannerCount <= 89) {
-            return "MIO 조교님";
-        } else {
-            return "MIO 교수님";
-        }
+        String[] grades = {
+            "F",   // <= -1
+            "D",   // 0-9
+            "D+",  // 10-19
+            "C",   // 20-29
+            "C+",  // 30-39`
+            "B",   // 40-49
+            "B+",  // 50-59
+            "A",   // 60-69
+            "A+",  // 70-79
+            "MIO 조교님",  // 80-89
+            "MIO 교수님"   // >= 90
+        };
+
+        int index = Math.min(Math.max((int) ((mannerCount + 1) / 10), 0), grades.length - 1);
+        return grades[index];
     }
 
     @Override
@@ -488,12 +481,11 @@ public class PostServiceImpl implements PostService{
     @Override
     public List<PostDto> findByLocation(String location) {
 
-        if(location == null || location.isEmpty() || location.isBlank()){
+        if(location == null || location.isBlank()){
             throw new IllegalArgumentException("지역을 입력해주세요.");
         }
 
-        List<Post> postList = postRepository.findByLocationContainingAndIsDeleteYN(location, "N");
-        return postList.stream().map(Post::toDto).toList();
+        return postRepository.findByLocationContainingAndIsDeleteYN(location, "N").stream().map(Post::toDto).toList();
     }
 
     @Override
@@ -515,7 +507,6 @@ public class PostServiceImpl implements PostService{
             }
         }
 
-
         // 운전자로 참여한 리스트 중 탑승자 평가를 하지 않은 리스트
         for(Participants p : participants1){
             if(p.getApprovalOrReject() == ApprovalOrReject.FINISH && p.getPassengerMannerFinish() == false){
@@ -529,36 +520,8 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public List<PostDto> findByDistance(Long postId) {
-        /*List<Post> postList = postRepository.findAll();
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Invalid Post ID: " + postId));
-        List<Post> postList1 = new ArrayList<>();
-
-        double lat = post.getLatitude();
-        double lon = post.getLongitude();
-
-        for(Post p : postList){
-            double lat1 = p.getLatitude();
-            double lon1 = p.getLongitude();
-            double theta = lon - lon1;
-            double dist = Math.sin(deg2rad(lat)) * Math.sin(deg2rad(lat1)) + Math.cos(deg2rad(lat)) * Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(theta));
-            dist = Math.acos(dist);
-            dist = rad2deg(dist);
-            dist = dist * 60 * 1.1515 * 1.609344;
-            if(dist <= 3){
-                postList1.add(p);
-            }
-        }*/
-
         List<Post> postList = postRepository.findByDistanceAndIsDeleteYN(postId, "N");
 
         return postList.stream().map(Post::toDto).toList();
     }
-
-/*    private double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-
-    private double rad2deg(double rad) {
-        return (rad * 180 / Math.PI);
-    }*/
 }
