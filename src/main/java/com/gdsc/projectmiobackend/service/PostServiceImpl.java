@@ -122,7 +122,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
-    @CacheEvict(value = "postCache", allEntries=true)
+    @CacheEvict(value = "postCache", key = "#id")
     public PostDto updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email){
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(id);
@@ -144,7 +144,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
-    @CacheEvict(value = "postCache", allEntries = true)
+    @CacheEvict(value = "postCache", key = "#postId")
     public PostDto updateTypeChangeById(Long postId, String email) {
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(postId);
@@ -164,7 +164,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
-    @CacheEvict(value = "postCache", allEntries=true)
+    @CacheEvict(value = "postCache", key = "#id")
     public PostDto updateFinishById(Long id, String email){
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(id);
@@ -224,7 +224,7 @@ public class PostServiceImpl implements PostService{
      * @return PostMsgDto
      */
     @Override
-    @CacheEvict(value = "postCache", allEntries=true)
+    @CacheEvict(value = "postCache", key = "#id")
     public PostMsgDto deletePostList(Long id, String email) {
         Post post = getPostById(id);
 
@@ -243,7 +243,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    @Cacheable(value="postCache", key="#pageable")
+    @Cacheable(value = "postCache", key = "'all_posts_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findPostList(Pageable pageable) {
         Page<Post> page = postRepository.findAllByIsDeleteYN("N", pageable);
         return page.map(Post::toDto);
