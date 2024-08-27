@@ -90,7 +90,7 @@ public class PostServiceImpl implements PostService{
      */
 
     @Override
-    @CacheEvict(value = "postCache", allEntries=true)
+    //@CacheEvict(value = "postCache", allEntries=true)
     public PostDto addPost(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email){
         UserEntity user = getUserByEmail(email);
         Category category = categoryRepository.findById(categoryId)
@@ -122,7 +122,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
-    @CacheEvict(value = "postCache", key = "#id")
+    //@CacheEvict(value = "postCache", key = "#id")
     public PostDto updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email){
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(id);
@@ -144,7 +144,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
-    @CacheEvict(value = "postCache", key = "#postId")
+    //@CacheEvict(value = "postCache", key = "#postId")
     public PostDto updateTypeChangeById(Long postId, String email) {
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(postId);
@@ -164,7 +164,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
-    @CacheEvict(value = "postCache", key = "#id")
+    //@CacheEvict(value = "postCache", key = "#id")
     public PostDto updateFinishById(Long id, String email){
         UserEntity user = getUserByEmail(email);
         Post post = getPostById(id);
@@ -224,7 +224,7 @@ public class PostServiceImpl implements PostService{
      * @return PostMsgDto
      */
     @Override
-    @CacheEvict(value = "postCache", key = "#id")
+    //@CacheEvict(value = "postCache", key = "#id")
     public PostMsgDto deletePostList(Long id, String email) {
         Post post = getPostById(id);
 
@@ -243,14 +243,14 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    @Cacheable(value = "postCache", key = "'all_posts_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    //@Cacheable(value = "postCache", key = "'all_posts_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findPostList(Pageable pageable) {
         Page<Post> page = postRepository.findAllByIsDeleteYN("N", pageable);
         return page.map(Post::toDto);
     }
 
     @Override
-    @Cacheable(value="postCache", key="#categoryId + 'category_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    //@Cacheable(value="postCache", key="#categoryId + 'category_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findByCategoryId(Long categoryId, Pageable pageable){
         Category category = this.categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다. " + categoryId));
@@ -259,7 +259,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    @Cacheable(value="postCache", key="#userId + 'userId_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    //@Cacheable(value="postCache", key="#userId + 'userId_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findByMemberId(Long userId, Pageable pageable){
         UserEntity user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저정보가 없습니다. 아이디: " + userId));

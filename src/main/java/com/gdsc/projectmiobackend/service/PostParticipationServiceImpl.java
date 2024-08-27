@@ -131,7 +131,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
      * @param email
      * @return ParticipateMsgDto
      */
-    @CacheEvict(value = "postCache", allEntries=true)
+    //@CacheEvict(value = "postCache", allEntries=true)
     @Override
     public ParticipateMsgDto cancelParticipateInPost(Long postId, String email) {
         UserEntity user = getUser(email);
@@ -183,7 +183,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
     }
 
     @Override
-    @CacheEvict(value = "postCache", allEntries=true)
+    //@CacheEvict(value = "postCache", allEntries=true)
     public ParticipateMsgDto participateApproval(Long participateId, String email) {
         Participants participants = participantsRepository.findById(participateId).orElseThrow(() -> new IllegalArgumentException("해당 참여 정보가 없습니다 : " + participateId));
         Post post = participants.getPost().getUser().getEmail().equals(email) ? participants.getPost() : null;
@@ -247,7 +247,7 @@ public class PostParticipationServiceImpl implements PostParticipationService {
      * @param email
      * @return ParticipateMsgDto
      */
-    @CacheEvict(value = "postCache", allEntries=true)
+    //@CacheEvict(value = "postCache", allEntries=true)
     public ParticipateMsgDto rejectParticipateInPost(Long participateId, String email){
         Participants participants = participantsRepository.findById(participateId).orElseThrow(() -> new IllegalArgumentException("해당 참여 정보가 없습니다 : " + participateId));
         Post post = participants.getPost().getUser().getEmail().equals(email) ? participants.getPost() : null;
