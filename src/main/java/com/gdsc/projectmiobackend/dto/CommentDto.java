@@ -17,6 +17,6 @@ public class CommentDto {
     private String content;
     private LocalDateTime createDate;
     private Long postId;
-    private UserEntity user;
+    private UserDto user;
     private List<CommentDto> childComments;
 }

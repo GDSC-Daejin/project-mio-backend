@@ -43,7 +43,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public Comment addFirstComment(CommentFirstCreateRequestDto commentRequestDto, Long postId, String email) {
+    public CommentDto addFirstComment(CommentFirstCreateRequestDto commentRequestDto, Long postId, String email) {
         UserEntity user = getUser(email);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
@@ -60,12 +60,13 @@ public class CommentServiceImpl implements CommentService{
                     .build();
             alarmRepository.save(alarm);
         }
+        commentRepository.save(comment);
 
-        return commentRepository.save(comment);
+        return comment.toDto();
     }
 
     @Override
-    public Comment addChildComment(CommentRequestDto commentRequestDto, Long parentId, String email) {
+    public CommentDto addChildComment(CommentRequestDto commentRequestDto, Long parentId, String email) {
         UserEntity user = getUser(email);
         Comment parentComment = getComment(parentId);
         Post post = parentComment.getPost();
@@ -83,13 +84,15 @@ public class CommentServiceImpl implements CommentService{
                     .build();
             alarmRepository.save(alarm);
         }
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
+
+        return comment.toDto();
     }
 
     @Override
     public List<CommentDto> getCommentList(Long postId) {
         List<Comment> commentList = commentRepository.findByPostId(postId);
-        return commentList.stream().map(this::mapToCommentDto).toList();
+        return commentList.stream().map(Comment::toDto).toList();
     }
 
     @Override
@@ -98,17 +101,17 @@ public class CommentServiceImpl implements CommentService{
         List<Comment> filteredParentComments = parentComments.stream()
                 .filter(comment -> comment.getParentComment() == null)
                 .toList();
-        return filteredParentComments.stream().map(this::mapToCommentDto).toList();
+        return filteredParentComments.stream().map(Comment::toDto).toList();
     }
 
     @Override
     public List<CommentDto> getChildCommentList(Long parentId) {
         Comment parentComment = getComment(parentId);
-        return parentComment.getChildComments().stream().map(this::mapToCommentDto).toList();
+        return parentComment.getChildComments().stream().map(Comment::toDto).toList();
     }
 
     @Override
-    public Comment updateComment(CommentPatchRequestDto commentPatchRequestDto, Long commentId, String email) {
+    public CommentDto updateComment(CommentPatchRequestDto commentPatchRequestDto, Long commentId, String email) {
         UserEntity user = getUser(email);
         Comment comment = getComment(commentId);
 
@@ -116,11 +119,12 @@ public class CommentServiceImpl implements CommentService{
             throw new IllegalStateException("해당 댓글을 수정할 권한이 없습니다.");
         }
         comment.setContent(commentPatchRequestDto.getContent());
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
+        return comment.toDto();
     }
 
     @Override
-    public Comment deleteComment(Long commentId, String email) {
+    public CommentDto deleteComment(Long commentId, String email) {
         UserEntity user = getUser(email);
         Comment comment = getComment(commentId);
 
@@ -128,22 +132,7 @@ public class CommentServiceImpl implements CommentService{
             throw new IllegalStateException("해당 댓글을 삭제할 권한이 없습니다.");
         }
         comment.setContent("삭제된 댓글입니다.");
-        return commentRepository.save(comment);
-    }
-
-    private CommentDto mapToCommentDto(Comment comment) {
-        List<CommentDto> childComments = comment.getChildComments()
-                .stream()
-                .map(this::mapToCommentDto)
-                .toList();
-
-        return CommentDto.builder()
-                .commentId(comment.getCommentId())
-                .content(comment.getContent())
-                .createDate(comment.getCreateDate())
-                .postId(comment.getPost().getId())
-                .user(comment.getUser())
-                .childComments(childComments)
-                .build();
+        commentRepository.save(comment);
+        return comment.toDto();
     }
 }

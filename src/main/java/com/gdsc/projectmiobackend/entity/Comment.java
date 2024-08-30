@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.entity;
 
 import com.gdsc.projectmiobackend.dto.CommentDto;
+import com.gdsc.projectmiobackend.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,11 +43,15 @@ public class Comment {
     private List<Comment> childComments;
 
     public CommentDto toDto(){
+
+        UserDto userDto = user.toDto();
+
         return CommentDto.builder()
+                .commentId(commentId)
                 .content(content)
                 .createDate(createDate)
                 .postId(post.getId())
-                .user(user)
+                .user(userDto)
                 .build();
     }
 }

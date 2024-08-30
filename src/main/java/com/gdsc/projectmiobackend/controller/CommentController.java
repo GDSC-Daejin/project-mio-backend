@@ -29,22 +29,14 @@ public class CommentController {
     @PostMapping("parent/{postId}")
     public ResponseEntity<CommentDto> createComment(@RequestBody CommentFirstCreateRequestDto commentRequestDto, @PathVariable Long postId, @AuthenticationPrincipal UserInfo user){
 
-        Comment comment;
-
-        comment = commentService.addFirstComment(commentRequestDto, postId, user.getEmail());
-
-        return ResponseEntity.ok(comment.toDto());
+        return ResponseEntity.ok(commentService.addFirstComment(commentRequestDto, postId, user.getEmail()));
     }
 
     @Operation(summary = "자식 댓글 생성")
     @PostMapping("child/{parentId}")
     public ResponseEntity<CommentDto> createReComment(@RequestBody CommentRequestDto commentRequestDto, @PathVariable Long parentId, @AuthenticationPrincipal UserInfo user){
 
-        Comment comment;
-
-        comment = commentService.addChildComment(commentRequestDto, parentId, user.getEmail());
-
-        return ResponseEntity.ok(comment.toDto());
+        return ResponseEntity.ok(commentService.addChildComment(commentRequestDto, parentId, user.getEmail()));
     }
 
 
@@ -73,14 +65,14 @@ public class CommentController {
     @Operation(summary = "댓글 수정")
     @PatchMapping("{commentId}")
     public ResponseEntity<CommentDto> update(@RequestBody CommentPatchRequestDto commentPatchRequestDto, @PathVariable Long commentId, @AuthenticationPrincipal UserInfo user){
-        Comment comment = this.commentService.updateComment(commentPatchRequestDto, commentId, user.getEmail());
-        return ResponseEntity.ok(comment.toDto());
+
+        return ResponseEntity.ok(commentService.updateComment(commentPatchRequestDto, commentId, user.getEmail()));
     }
 
     @Operation(summary = "댓글 삭제")
     @PatchMapping("/delete/{commentId}")
     public ResponseEntity<CommentDto> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal UserInfo user){
-        Comment comment = this.commentService.deleteComment(commentId, user.getEmail());
-        return ResponseEntity.ok(comment.toDto());
+
+        return ResponseEntity.ok(commentService.deleteComment(commentId, user.getEmail()));
     }
 }

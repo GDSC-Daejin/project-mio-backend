@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface CommentService {
 
-    Comment addFirstComment(CommentFirstCreateRequestDto commentRequestDto, Long postId, String email);
+    CommentDto addFirstComment(CommentFirstCreateRequestDto commentRequestDto, Long postId, String email);
 
-    Comment addChildComment(CommentRequestDto commentRequestDto, Long postId, String email);
+    CommentDto addChildComment(CommentRequestDto commentRequestDto, Long postId, String email);
 
     List<CommentDto> getCommentList(Long postId);
 
@@ -20,8 +20,8 @@ public interface CommentService {
 
     List<CommentDto> getChildCommentList(Long parentId);
 
-    Comment updateComment(CommentPatchRequestDto commentRequestDto, Long commentId, String email);
+    CommentDto updateComment(CommentPatchRequestDto commentRequestDto, Long commentId, String email);
 
-    Comment deleteComment(Long commentId, String email);
+    CommentDto deleteComment(Long commentId, String email);
 
 }

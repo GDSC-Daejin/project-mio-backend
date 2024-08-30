@@ -23,9 +23,6 @@ public class CommentRequestDto {
     @NotEmpty(message = "내용은 필수 항목입니다.")
     private String content;
 
-    @Schema(description = "댓글 작성일.")
-    private LocalDateTime createDate;
-
     public Comment toEntity(Post post, UserEntity user){
         return Comment.builder()
                 .content(content)
