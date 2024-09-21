@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -90,6 +91,7 @@ public class PostServiceImpl implements PostService{
      */
 
     @Override
+    @Transactional
     //@CacheEvict(value = "postCache", allEntries=true)
     public PostDto addPost(PostCreateRequestDto postCreateRequestDto, Long categoryId, String email){
         UserEntity user = getUserByEmail(email);
@@ -122,6 +124,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
+    @Transactional
     //@CacheEvict(value = "postCache", key = "#id")
     public PostDto updateById(Long id, PostPatchRequestDto postPatchRequestDto, String email){
         UserEntity user = getUserByEmail(email);
@@ -144,6 +147,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
+    @Transactional
     //@CacheEvict(value = "postCache", key = "#postId")
     public PostDto updateTypeChangeById(Long postId, String email) {
         UserEntity user = getUserByEmail(email);
@@ -164,6 +168,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
+    @Transactional
     //@CacheEvict(value = "postCache", key = "#id")
     public PostDto updateFinishById(Long id, String email){
         UserEntity user = getUserByEmail(email);
@@ -224,6 +229,7 @@ public class PostServiceImpl implements PostService{
      * @return PostMsgDto
      */
     @Override
+    @Transactional
     //@CacheEvict(value = "postCache", key = "#id")
     public PostMsgDto deletePostList(Long id, String email) {
         Post post = getPostById(id);
@@ -243,6 +249,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     //@Cacheable(value = "postCache", key = "'all_posts_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findPostList(Pageable pageable) {
         Page<Post> page = postRepository.findAllByIsDeleteYN("N", pageable);
@@ -250,6 +257,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     //@Cacheable(value="postCache", key="#categoryId + 'category_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findByCategoryId(Long categoryId, Pageable pageable){
         Category category = this.categoryRepository.findById(categoryId)
@@ -259,6 +267,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     //@Cacheable(value="postCache", key="#userId + 'userId_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PostDto> findByMemberId(Long userId, Pageable pageable){
         UserEntity user = this.userRepository.findById(userId)
@@ -268,6 +277,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<PostDto> findByRegion3Depth(String email, Pageable pageable){
         UserEntity user = getUserByEmail(email);
         Page<Post> page = postRepository.findByLocation(pageable, "N", user.getActivityLocation());
@@ -279,6 +289,7 @@ public class PostServiceImpl implements PostService{
      * @return PostDto
      */
     @Override
+    @Transactional
     public PostDto showDetailPost(Long id){
         Post post = getPostById(id);
         post.setViewCount(post.getViewCount() + 1);
@@ -294,6 +305,7 @@ public class PostServiceImpl implements PostService{
      * @return List<PostDto>
      */
     @Override
+    @Transactional(readOnly = true)
     public List<PostDto> findByLatitudeAndLongitude(Double latitude, Double longitude){
         List<Post> postList = postRepository.findByLatitudeAndLongitudeAndIsDeleteYN(latitude, longitude, "N");
         return postList.stream().map(Post::toDto).toList();
@@ -305,6 +317,7 @@ public class PostServiceImpl implements PostService{
      * @return ParticipateGetDto
      */
     @Override
+    @Transactional(readOnly = true)
     public ParticipateGetDto getApprovalUserCountByPost(Long postId){
         Post post = getPostById(postId);
         return new ParticipateGetDto(post.getParticipantsCount(), post.getNumberOfPassengers());
@@ -318,6 +331,7 @@ public class PostServiceImpl implements PostService{
      * @return PostMsgDto
      */
     @Override
+    @Transactional
     public PostMsgDto driverUpdateManner(Long postId, String email, MannerDriverUpdateRequestDto mannerDriverUpdateRequestDto){
         UserEntity currentUser = getUserByEmail(email);
 
@@ -398,6 +412,7 @@ public class PostServiceImpl implements PostService{
      * @return PostMsgDto
      */
     @Override
+    @Transactional
     public PostMsgDto updateParticipatesManner(Long userId, MannerPassengerUpdateRequestDto mannerPassengerUpdateRequestDto, String email){
         UserEntity targetUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("운전자의 유저정보가 없습니다."));
@@ -469,11 +484,12 @@ public class PostServiceImpl implements PostService{
             "MIO 교수님"   // >= 90
         };
 
-        int index = Math.min(Math.max((int) ((mannerCount + 1) / 10), 0), grades.length - 1);
+        int index = Math.min(Math.max((int) ((mannerCount + 1) / 10), 0) + 1, grades.length - 1);
         return grades[index];
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<PostDto> findByParticipate(String email, Pageable pageable){
         UserEntity user = this.userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
         List<Participants> participants = this.participantsRepository.findByUserIdAndIsDeleteYN(user.getId(), "N");
@@ -481,6 +497,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PostDto> findByLocation(String location) {
 
         if(location == null || location.isBlank()){
@@ -491,6 +508,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<PostDto> reviewsCanBeWritten(String email, Pageable pageable) {
         UserEntity user = getUserByEmail(email);
 
@@ -521,6 +539,7 @@ public class PostServiceImpl implements PostService{
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<PostDto> findByDistance(Long postId) {
         List<Post> postList = postRepository.findByDistanceAndIsDeleteYN(postId, "N");
 
