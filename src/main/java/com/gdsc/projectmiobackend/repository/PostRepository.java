@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.repository;
 
 
+import com.gdsc.projectmiobackend.common.PostType;
 import com.gdsc.projectmiobackend.entity.Category;
 import com.gdsc.projectmiobackend.entity.Post;
 import com.gdsc.projectmiobackend.entity.UserEntity;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    Page<Post> findByCategoryAndIsDeleteYN(Category category, Pageable pageable, String isDeleteYN);
+    Page<Post> findByCategoryAndIsDeleteYNAndPostType(Category category, Pageable pageable, String isDeleteYN, PostType postType);
 
     Page<Post> findByUserAndIsDeleteYN(UserEntity user, Pageable pageable, String isDeleteYN);
 

@@ -262,7 +262,7 @@ public class PostServiceImpl implements PostService{
     public Page<PostDto> findByCategoryId(Long categoryId, Pageable pageable){
         Category category = this.categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다. " + categoryId));
-        Page<Post> page = postRepository.findByCategoryAndIsDeleteYN(category, pageable, "N");
+        Page<Post> page = postRepository.findByCategoryAndIsDeleteYNAndPostType(category, pageable, "N", PostType.BEFORE_DEADLINE);
         return page.map(Post::toDto);
     }
 
