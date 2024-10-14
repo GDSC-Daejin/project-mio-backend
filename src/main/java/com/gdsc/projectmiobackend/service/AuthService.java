@@ -1,10 +1,12 @@
 package com.gdsc.projectmiobackend.service;
 
 
+import com.gdsc.projectmiobackend.common.AccountApprovalStatus;
 import com.gdsc.projectmiobackend.discord.MsgService;
 import com.gdsc.projectmiobackend.dto.SocialLoginRequest;
 import com.gdsc.projectmiobackend.dto.request.AdditionalUserPatchDto;
 import com.gdsc.projectmiobackend.entity.UserEntity;
+import com.gdsc.projectmiobackend.jwt.dto.UserInfo;
 import com.gdsc.projectmiobackend.repository.UserRepository;
 import com.gdsc.projectmiobackend.common.RoleType;
 import com.gdsc.projectmiobackend.jwt.TokenProvider;
@@ -118,5 +120,12 @@ public class AuthService {
     @Transactional
     public UserEntity getUserEntity(Long userId) throws Exception {
         return userRepository.findById(userId).orElseThrow(() -> new Exception("INVALID_TOKEN"));
+    }
+
+    public UserEntity setAccountStatus(AccountApprovalStatus status, UserInfo user) throws Exception {
+        UserEntity userEntity = userRepository.findByEmail(user.getEmail()).orElseThrow();
+        userEntity.setAccountApprovalStatus(status);
+        userRepository.save(userEntity);
+        return userEntity;
     }
 }

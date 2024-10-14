@@ -1,5 +1,6 @@
 package com.gdsc.projectmiobackend.dto;
 
+import com.gdsc.projectmiobackend.common.AccountApprovalStatus;
 import com.gdsc.projectmiobackend.common.RoleType;
 import com.gdsc.projectmiobackend.common.Status;
 import com.gdsc.projectmiobackend.entity.UserEntity;
@@ -24,6 +25,7 @@ public class UserDto {
     private Long mannerCount;
     private String grade;
     private String activityLocation;
+    private AccountApprovalStatus accountApprovalStatus;
     public UserDto(UserEntity user) {
         this.id = user.getId();
         this.email = user.getEmail();
@@ -38,5 +40,6 @@ public class UserDto {
         this.mannerCount = user.getMannerCount();
         this.grade = user.getGrade();
         this.activityLocation = user.getActivityLocation();
+        this.accountApprovalStatus = user.getAccountApprovalStatus();
     }
 }

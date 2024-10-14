@@ -1,6 +1,7 @@
 package com.gdsc.projectmiobackend.entity;
 
 
+import com.gdsc.projectmiobackend.common.AccountApprovalStatus;
 import com.gdsc.projectmiobackend.common.RoleType;
 import com.gdsc.projectmiobackend.common.Status;
 import com.gdsc.projectmiobackend.dto.UserDto;
@@ -54,6 +55,9 @@ public class UserEntity{
 
     private String activityLocation;
 
+    @Enumerated(EnumType.STRING)
+    private AccountApprovalStatus accountApprovalStatus;
+
     public UserEntity(GoogleOAuth2UserInfo userInfo) {
         this.email = userInfo.getEmail();
         this.studentId = userInfo.getEmail().split("@")[0];
@@ -63,6 +67,7 @@ public class UserEntity{
         this.status = Status.ACTIVE;
         this.mannerCount = 40L;
         this.grade = "B";
+        this.accountApprovalStatus = AccountApprovalStatus.PENDING;
     }
 
     public UserDto toDto(){
@@ -80,6 +85,7 @@ public class UserEntity{
                 .roleType(roleType)
                 .status(status)
                 .verifySmoker(verifySmoker)
+                .accountApprovalStatus(accountApprovalStatus)
                 .build();
     }
 }
