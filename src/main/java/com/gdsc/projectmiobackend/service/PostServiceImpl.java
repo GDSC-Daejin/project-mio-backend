@@ -545,6 +545,4 @@ public class PostServiceImpl implements PostService{
 
         return postList.stream().map(Post::toDto).toList();
     }
-
-    //test
 }
