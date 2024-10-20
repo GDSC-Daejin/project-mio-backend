@@ -14,8 +14,6 @@ import com.gdsc.projectmiobackend.entity.*;
 import com.gdsc.projectmiobackend.notification.service.impl.NotificationServiceImpl;
 import com.gdsc.projectmiobackend.repository.*;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
